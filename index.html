@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="LevelZero — Turn your real life into an RPG. Complete quests, build habits, level up, and become the hero of your own story.">
+    <meta name="theme-color" content="#0a0a0f">
+    <title>LevelZero — Gamify Your Life</title>
+
+    <!-- Favicon -->
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236366f1' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='14.5 17.5 3 6 3 3 6 3 17.5 14.5'/><line x1='13' y1='19' x2='19' y2='13'/><line x1='16' y1='16' x2='20' y2='20'/><line x1='19' y1='21' x2='21' y2='19'/></svg>">
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="css/variables.css">
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/animations.css">
+    <link rel="stylesheet" href="css/responsive.css">
+
+    <!-- Import Map for NPM Packages -->
+    <script type="importmap">
+        {
+            "imports": {
+                "@google/genai": "https://esm.sh/@google/genai"
+            }
+        }
+    </script>
+
+    <!-- App Entry Point -->
+    <script type="module" src="js/app.js"></script>
+</head>
+
+<body>
+    <div id="app">
+        <!-- Loading State -->
+        <div
+            style="display: flex; align-items: center; justify-content: center; min-height: 100vh; flex-direction: column; gap: 1rem;">
+            <div style="width: 48px; height: 48px; color: #6366f1;"><svg xmlns="http://www.w3.org/2000/svg" width="48"
+                    height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="14.5 17.5 3 6 3 3 6 3 17.5 14.5" />
+                    <line x1="13" y1="19" x2="19" y2="13" />
+                    <line x1="16" y1="16" x2="20" y2="20" />
+                    <line x1="19" y1="21" x2="21" y2="19" />
+                </svg></div>
+            <div
+                style="color: #475569; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; font-size: 0.8rem;">
+                Loading LevelZero...
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

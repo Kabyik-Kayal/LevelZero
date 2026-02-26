@@ -1,0 +1,111 @@
+/* ============================================
+   LevelZero Responsive Styles
+   ============================================ */
+
+/* Mobile-first: base styles are mobile */
+
+/* --- Small screens (phones, < 640px) --- */
+@media (max-width: 639px) {
+    :root {
+        font-size: 15px;
+        --header-height: auto;
+    }
+
+    .app-header-inner {
+        flex-direction: column;
+        gap: var(--space-3);
+    }
+
+    .header-stats-bar {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .header-identity {
+        width: 100%;
+    }
+
+    .header-progress-area {
+        min-width: unset;
+        width: 100%;
+    }
+
+    .tab-nav {
+        gap: 2px;
+    }
+
+    .tab-nav-label {
+        display: none;
+    }
+
+    .tab-nav-btn {
+        padding: var(--space-2) var(--space-3);
+    }
+
+    .quest-item-inner {
+        flex-direction: column;
+        align-items: flex-start !important;
+        gap: var(--space-3);
+    }
+
+    .quest-rewards {
+        flex-direction: row;
+        align-items: center;
+        gap: var(--space-3);
+    }
+
+    .stat-cards-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .shop-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .achievement-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .quest-form-controls {
+        flex-direction: column;
+    }
+
+    .quest-form-input-row {
+        flex-direction: column;
+    }
+
+    .quest-form-input-row .btn {
+        width: 100%;
+    }
+
+    .modal-content {
+        margin: var(--space-4);
+        max-height: calc(100vh - var(--space-8));
+    }
+}
+
+/* --- Tablet (640px - 1023px) --- */
+@media (min-width: 640px) {
+    .stat-cards-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .shop-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .achievement-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+/* --- Desktop (1024px+) --- */
+@media (min-width: 1024px) {
+    .stat-cards-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+
+    .achievement-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
