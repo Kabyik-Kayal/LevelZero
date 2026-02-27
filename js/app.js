@@ -8,19 +8,17 @@ import { renderHeader } from './components/Header.js';
 import { showToast } from './components/Toast.js';
 import { Icons } from './components/Icons.js';
 
-import { renderDashboard, attachDashboardEvents } from './modules/Dashboard.js';
-import { renderHabits, attachHabitsEvents } from './modules/Habits.js';
+import { renderActivities, attachActivitiesEvents } from './modules/Activities.js';
 import { renderCharacter, attachCharacterEvents } from './modules/Character.js';
 import { renderShop, attachShopEvents } from './modules/Shop.js';
 import { renderAchievements, attachAchievementsEvents } from './modules/Achievements.js';
 import { renderSettings, attachSettingsEvents } from './modules/Settings.js';
 
 // --- App State ---
-let activeTab = 'dashboard';
+let activeTab = 'activities';
 
 const TABS = [
-    { id: 'dashboard', icon: Icons.trophy, label: 'Quests' },
-    { id: 'habits', icon: Icons.flame, label: 'Habits' },
+    { id: 'activities', icon: Icons.sword, label: 'Activities' },
     { id: 'character', icon: Icons.user, label: 'Hero' },
     { id: 'shop', icon: Icons.shoppingBag, label: 'Bazaar' },
     { id: 'achievements', icon: Icons.award, label: 'Awards' },
@@ -160,11 +158,8 @@ function render() {
     // Build tab content
     let tabContent = '';
     switch (activeTab) {
-        case 'dashboard':
-            tabContent = renderDashboard(state, gameEngine);
-            break;
-        case 'habits':
-            tabContent = renderHabits(state);
+        case 'activities':
+            tabContent = renderActivities(state, gameEngine);
             break;
         case 'character':
             tabContent = renderCharacter(state, gameEngine);
@@ -234,11 +229,8 @@ function attachTabEvents() {
     const rerender = () => render();
 
     switch (activeTab) {
-        case 'dashboard':
-            attachDashboardEvents(gameEngine, rerender);
-            break;
-        case 'habits':
-            attachHabitsEvents(gameEngine, rerender);
+        case 'activities':
+            attachActivitiesEvents(gameEngine, rerender);
             break;
         case 'character':
             attachCharacterEvents(gameEngine, rerender);
