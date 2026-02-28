@@ -47,6 +47,8 @@ function getDefaultState() {
         shopItems: JSON.parse(JSON.stringify(DEFAULT_SHOP_ITEMS)),
         customRewards: [],
         purchaseHistory: [],
+        // { itemId: { daily: count, weekly: count, lastDailyReset: dateStr, lastWeeklyReset: weekStr } }
+        purchaseCounts: {},
 
         // Achievements
         unlockedAchievements: [],
@@ -311,6 +313,17 @@ export class GameEngine {
             return { success: false, reason: `Requires Level ${item.levelRequired}` };
         }
 
+        // Purchase limit checks
+        if (!isCustom) {
+            const counts = this._getItemCounts(itemId);
+            if (item.dailyLimit != null && counts.daily >= item.dailyLimit) {
+                return { success: false, reason: 'Daily limit reached' };
+            }
+            if (item.weeklyLimit != null && counts.weekly >= item.weeklyLimit) {
+                return { success: false, reason: 'Weekly limit reached' };
+            }
+        }
+
         if (this.state.stats.gold < item.price) {
             eventBus.emit('shop:insufficient', { item, gold: this.state.stats.gold });
             return { success: false, reason: 'Not enough gold' };
@@ -323,12 +336,53 @@ export class GameEngine {
             date: Date.now(),
         });
 
+        // Track purchase counts
+        if (!isCustom) {
+            const counts = this._getItemCounts(itemId);
+            counts.daily++;
+            counts.weekly++;
+        }
+
         eventBus.emit('shop:purchase', { item });
         eventBus.emit('gold:change', { gold: this.state.stats.gold, change: -item.price });
         this._checkAchievements();
         this._save();
 
         return { success: true, item };
+    }
+
+    _getItemCounts(itemId) {
+        const today = new Date().toDateString();
+        const weekNum = this._getWeekNumber();
+
+        if (!this.state.purchaseCounts[itemId]) {
+            this.state.purchaseCounts[itemId] = { daily: 0, weekly: 0, lastDailyReset: today, lastWeeklyReset: weekNum };
+        }
+
+        const c = this.state.purchaseCounts[itemId];
+
+        // Auto-reset if day/week changed
+        if (c.lastDailyReset !== today) {
+            c.daily = 0;
+            c.lastDailyReset = today;
+        }
+        if (c.lastWeeklyReset !== weekNum) {
+            c.weekly = 0;
+            c.lastWeeklyReset = weekNum;
+        }
+
+        return c;
+    }
+
+    _getWeekNumber() {
+        const d = new Date();
+        const yearStart = new Date(d.getFullYear(), 0, 1);
+        const weekNo = Math.ceil(((d - yearStart) / 86400000 + yearStart.getDay() + 1) / 7);
+        return `${d.getFullYear()}-W${weekNo}`;
+    }
+
+    getPurchaseCounts(itemId) {
+        return this._getItemCounts(itemId);
     }
 
     addCustomReward(name, price, icon = 'gift') {

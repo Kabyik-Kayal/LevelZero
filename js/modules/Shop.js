@@ -6,20 +6,64 @@ import { Icons } from '../components/Icons.js';
 import { showToast } from '../components/Toast.js';
 
 export function renderShop(state, engine) {
-    const { shopItems, customRewards, stats } = state;
-    const level = stats.level;
+  const { shopItems, customRewards, stats } = state;
+  const level = stats.level;
 
-    const allItems = [
-        ...shopItems.map(i => ({ ...i, isCustom: false })),
-        ...customRewards.map(i => ({ ...i, isCustom: true })),
-    ];
+  const allItems = [
+    ...shopItems.map(i => ({ ...i, isCustom: false })),
+    ...customRewards.map(i => ({ ...i, isCustom: true })),
+  ];
 
-    const itemsHTML = allItems.map(item => {
-        const locked = item.levelRequired && level < item.levelRequired;
-        const canAfford = stats.gold >= item.price;
+  const itemsHTML = allItems.map(item => {
+    const locked = item.levelRequired && level < item.levelRequired;
+    const canAfford = stats.gold >= item.price;
 
-        return `
-      <div class="shop-item ${locked ? 'locked' : ''}" data-item-id="${item.id}">
+    // Check purchase limits (only for default items)
+    let dailyLeft = null;
+    let weeklyLeft = null;
+    let limitHit = false;
+
+    if (!item.isCustom) {
+      const counts = engine.getPurchaseCounts(item.id);
+      if (item.dailyLimit != null) {
+        dailyLeft = Math.max(0, item.dailyLimit - counts.daily);
+        if (dailyLeft <= 0) limitHit = true;
+      }
+      if (item.weeklyLimit != null) {
+        weeklyLeft = Math.max(0, item.weeklyLimit - counts.weekly);
+        if (weeklyLeft <= 0) limitHit = true;
+      }
+    }
+
+    const disabled = locked || !canAfford || limitHit;
+
+    // Build limit badges
+    let limitBadges = '';
+    if (!item.isCustom && !locked) {
+      if (dailyLeft != null) {
+        limitBadges += `<span class="badge ${dailyLeft === 0 ? 'badge-hard' : 'badge-easy'}" style="font-size: 8px;">${dailyLeft}/${item.dailyLimit} today</span>`;
+      }
+      if (weeklyLeft != null) {
+        limitBadges += `<span class="badge ${weeklyLeft === 0 ? 'badge-hard' : 'badge-medium'}" style="font-size: 8px;">${weeklyLeft}/${item.weeklyLimit} /week</span>`;
+      }
+    }
+
+    // Button label
+    let btnLabel = 'Purchase';
+    let btnClass = 'btn-gold';
+    if (locked) {
+      btnLabel = Icons.lock + ' Locked';
+      btnClass = '';
+    } else if (limitHit) {
+      btnLabel = 'Limit Reached';
+      btnClass = 'btn-ghost';
+    } else if (!canAfford) {
+      btnLabel = 'Can\'t Afford';
+      btnClass = 'btn-ghost';
+    }
+
+    return `
+      <div class="shop-item ${locked ? 'locked' : ''} ${limitHit ? 'limit-hit' : ''}" data-item-id="${item.id}">
         <div class="shop-item-left">
           <div class="shop-item-icon">
             <span style="font-size: 1.5rem;">${Icons[item.icon] || Icons.gift}</span>
@@ -34,17 +78,18 @@ export function renderShop(state, engine) {
                 ${Icons.lock} Unlocks at Level ${item.levelRequired}
               </div>
             ` : ''}
+            ${limitBadges ? `<div class="quest-tags" style="margin-top: 4px;">${limitBadges}</div>` : ''}
           </div>
         </div>
         <div style="display: flex; align-items: center; gap: var(--space-2);">
           <button 
-            class="btn btn-sm ${locked ? '' : canAfford ? 'btn-gold' : 'btn-ghost'}"
+            class="btn btn-sm ${btnClass}"
             data-action="buy-item"
             data-id="${item.id}"
             data-custom="${item.isCustom}"
-            ${locked || !canAfford ? 'disabled' : ''}
+            ${disabled ? 'disabled' : ''}
           >
-            ${locked ? Icons.lock + ' Locked' : canAfford ? 'Purchase' : 'Can\'t Afford'}
+            ${btnLabel}
           </button>
           ${item.isCustom ? `
             <button class="delete-btn" data-action="delete-reward" data-id="${item.id}" title="Remove reward" style="opacity: 1;">
@@ -54,9 +99,9 @@ export function renderShop(state, engine) {
         </div>
       </div>
     `;
-    }).join('');
+  }).join('');
 
-    return `
+  return `
     <div class="tab-content" id="tab-shop">
       <div class="info-banner indigo animate-slide-up">
         <div class="info-banner-icon">${Icons.shoppingBag}</div>
@@ -99,65 +144,65 @@ export function renderShop(state, engine) {
 }
 
 export function attachShopEvents(engine, rerender) {
-    // Buy & delete actions
-    const shopList = document.getElementById('shop-list');
-    if (shopList) {
-        shopList.addEventListener('click', (e) => {
-            const btn = e.target.closest('[data-action]');
-            if (!btn) return;
+  // Buy & delete actions
+  const shopList = document.getElementById('shop-list');
+  if (shopList) {
+    shopList.addEventListener('click', (e) => {
+      const btn = e.target.closest('[data-action]');
+      if (!btn) return;
 
-            const action = btn.dataset.action;
+      const action = btn.dataset.action;
 
-            if (action === 'buy-item') {
-                const id = btn.dataset.id;
-                const isCustom = btn.dataset.custom === 'true';
-                const numId = parseFloat(id);
-                const usedId = isNaN(numId) ? id : numId;
-                const result = engine.buyItem(usedId, isCustom);
+      if (action === 'buy-item') {
+        const id = btn.dataset.id;
+        const isCustom = btn.dataset.custom === 'true';
+        const numId = parseFloat(id);
+        const usedId = isNaN(numId) ? id : numId;
+        const result = engine.buyItem(usedId, isCustom);
 
-                if (result.success) {
-                    showToast({
-                        title: `Purchased: ${result.item.name}`,
-                        message: `You earned this! -${result.item.price} gold`,
-                        type: 'success',
-                        icon: Icons[result.item.icon] || Icons.shoppingBag,
-                    });
-                } else {
-                    // Shake animation
-                    const shopItem = btn.closest('.shop-item');
-                    if (shopItem) {
-                        shopItem.classList.add('animate-shake');
-                        setTimeout(() => shopItem.classList.remove('animate-shake'), 500);
-                    }
-                    showToast({
-                        title: result.reason,
-                        type: 'warning',
-                    });
-                }
-                rerender();
-            } else if (action === 'delete-reward') {
-                const id = parseFloat(btn.dataset.id);
-                engine.deleteCustomReward(id);
-                rerender();
-            }
-        });
-    }
+        if (result.success) {
+          showToast({
+            title: `Purchased: ${result.item.name}`,
+            message: `You earned this! -${result.item.price} gold`,
+            type: 'success',
+            icon: Icons[result.item.icon] || Icons.shoppingBag,
+          });
+        } else {
+          // Shake animation
+          const shopItem = btn.closest('.shop-item');
+          if (shopItem) {
+            shopItem.classList.add('animate-shake');
+            setTimeout(() => shopItem.classList.remove('animate-shake'), 500);
+          }
+          showToast({
+            title: result.reason,
+            type: 'warning',
+          });
+        }
+        rerender();
+      } else if (action === 'delete-reward') {
+        const id = parseFloat(btn.dataset.id);
+        engine.deleteCustomReward(id);
+        rerender();
+      }
+    });
+  }
 
-    // Custom reward form
-    const form = document.getElementById('custom-reward-form');
-    if (form) {
-        form.addEventListener('submit', (e) => {
-            e.preventDefault();
-            const name = document.getElementById('reward-name').value.trim();
-            const price = parseInt(document.getElementById('reward-price').value);
-            const icon = document.getElementById('reward-icon').value;
+  // Custom reward form
+  const form = document.getElementById('custom-reward-form');
+  if (form) {
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const name = document.getElementById('reward-name').value.trim();
+      const price = parseInt(document.getElementById('reward-price').value);
+      const icon = document.getElementById('reward-icon').value;
 
-            if (!name || !price || price < 1) return;
+      if (!name || !price || price < 1) return;
 
-            engine.addCustomReward(name, price, icon);
-            document.getElementById('reward-name').value = '';
-            document.getElementById('reward-price').value = '';
-            rerender();
-        });
-    }
+      engine.addCustomReward(name, price, icon);
+      document.getElementById('reward-name').value = '';
+      document.getElementById('reward-price').value = '';
+      rerender();
+    });
+  }
 }
