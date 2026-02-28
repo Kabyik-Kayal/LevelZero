@@ -45,7 +45,7 @@ export const STARTER_PACKS = [
     {
         id: 'body-maintenance',
         name: 'Body Maintenance',
-        icon: 'muscle',
+        icon: 'heartPulse',
         description: 'Your brain runs on a body — maintain it',
         quests: [
             { text: 'Do a full 45-minute gym or home workout', difficulty: 'hard', category: 'strength' },
@@ -64,7 +64,7 @@ export const STARTER_PACKS = [
     {
         id: 'portfolio-builder',
         name: 'Portfolio Builder',
-        icon: 'globe',
+        icon: 'portfolio',
         description: 'Make yourself findable & impressive',
         quests: [
             { text: 'Write and publish a technical blog post', difficulty: 'epic', category: 'charisma' },
