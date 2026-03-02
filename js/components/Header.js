@@ -3,29 +3,30 @@
 // ============================================
 
 import { Icons } from './Icons.js';
+import { esc } from '../utils/escapeHTML.js';
 
 /**
  * Render the sticky header with avatar, XP, HP, gold, streak
  */
 export function renderHeader(state, engine) {
-    const { stats, heroName } = state;
-    const title = engine.getCurrentTitle();
-    const totalStreaks = engine.getTotalStreaks();
-    const xpPercent = Math.min((stats.xp / stats.xpToNextLevel) * 100, 100);
-    const hpPercent = Math.min((stats.hp / stats.maxHp) * 100, 100);
+  const { stats, heroName, heroImage } = state;
+  const title = engine.getCurrentTitle();
+  const totalStreaks = engine.getTotalStreaks();
+  const xpPercent = Math.min((stats.xp / stats.xpToNextLevel) * 100, 100);
+  const hpPercent = Math.min((stats.hp / stats.maxHp) * 100, 100);
 
-    return `
+  return `
     <header class="app-header" id="app-header">
       <div class="app-header-inner">
         <div class="header-identity">
           <div class="header-avatar">
             <div class="header-avatar-circle">
-              ${Icons.user}
+              ${heroImage ? `<img src="${heroImage}" alt="Hero Avatar" />` : Icons.user}
             </div>
             <div class="header-level-badge">Lv${stats.level}</div>
           </div>
           <div class="header-progress-area">
-            <div class="header-hero-name">${heroName} · ${title}</div>
+            <div class="header-hero-name">${esc(heroName)} · ${title}</div>
             <div class="header-progress-label xp">
               <span>Experience</span>
               <span>${Math.floor(stats.xp)} / ${stats.xpToNextLevel} XP</span>

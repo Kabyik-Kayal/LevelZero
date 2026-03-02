@@ -4,6 +4,7 @@
 
 import { Icons } from '../components/Icons.js';
 import { STARTER_PACKS } from '../data/starterPacks.js';
+import { esc } from '../utils/escapeHTML.js';
 
 // --- Starter Pack Pickers ---
 
@@ -43,7 +44,7 @@ function renderAISuggestedQuests(aiQuests) {
                 <div class="quest-item-left">
                   <div class="ai-badge-icon">${Icons.sparkles}</div>
                   <div>
-                    <p class="quest-text">${q.text}</p>
+                    <p class="quest-text">${esc(q.text)}</p>
                     <div class="quest-tags">
                       <span class="badge badge-${q.difficulty}">${q.difficulty}</span>
                       <span class="badge badge-${q.category}">${q.category}</span>
@@ -76,7 +77,7 @@ function renderAISuggestedHabits(aiHabits) {
               <div class="habit-item-left">
                 <div class="ai-badge-icon">${Icons.sparkles}</div>
                 <div>
-                  <p class="habit-name">${h.text}</p>
+                  <p class="habit-name">${esc(h.text)}</p>
                   <p class="habit-streak" style="color: var(--color-purple);">AI suggested · ${h.category}</p>
                 </div>
               </div>
@@ -107,7 +108,7 @@ export function renderActivities(state, engine) {
               ${Icons.check}
             </button>
             <div>
-              <p class="quest-text">${dailyQuest.text}</p>
+              <p class="quest-text">${esc(dailyQuest.text)}</p>
               <div class="quest-tags">
                 <span class="badge badge-${dailyQuest.difficulty}">${dailyQuest.difficulty}</span>
                 <span class="badge badge-${dailyQuest.category}">${dailyQuest.category}</span>
@@ -140,7 +141,7 @@ export function renderActivities(state, engine) {
             ${Icons.flame}
           </div>
           <div>
-            <p class="habit-name">${h.text}</p>
+            <p class="habit-name">${esc(h.text)}</p>
             <p class="habit-streak">${Icons.flame} Streak: ${h.streak} days${h.longestStreak > 0 ? ` · Best: ${h.longestStreak}` : ''}</p>
           </div>
         </div>
@@ -173,7 +174,7 @@ export function renderActivities(state, engine) {
               ${q.completed ? Icons.check : ''}
             </button>
             <div>
-              <p class="quest-text ${q.completed ? 'done' : ''}">${q.text}</p>
+              <p class="quest-text ${q.completed ? 'done' : ''}">${esc(q.text)}</p>
               <div class="quest-tags">
                 <span class="badge badge-${q.difficulty}">${q.difficulty}</span>
                 <span class="badge badge-${q.category}">${q.category}</span>

@@ -1,0 +1,58 @@
+{
+  "name": "levelzero",
+  "version": "1.0.0",
+  "description": "LevelZero — Gamify Your Life. Turn your real life into an RPG.",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "dist": "electron-builder",
+    "postinstall": "electron-builder install-app-deps"
+  },
+  "author": "Kabyik Kayal",
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "^40.6.1",
+    "electron-builder": "^26.8.1"
+  },
+  "dependencies": {
+    "@google/genai": "^0.7.0"
+  },
+  "build": {
+    "appId": "com.kabyik.levelzero",
+    "productName": "LevelZero",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "index.html",
+      "js/**/*",
+      "css/**/*",
+      "assets/**/*",
+      "node_modules/**/*"
+    ],
+    "mac": {
+      "category": "public.app-category.lifestyle",
+      "icon": "assets/icon.png",
+      "target": [
+        "dmg"
+      ]
+    },
+    "dmg": {
+      "title": "LevelZero",
+      "contents": [
+        {
+          "x": 130,
+          "y": 220
+        },
+        {
+          "x": 410,
+          "y": 220,
+          "type": "link",
+          "path": "/Applications"
+        }
+      ]
+    }
+  }
+}

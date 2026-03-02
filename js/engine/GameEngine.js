@@ -13,8 +13,9 @@ import { DEFAULT_SHOP_ITEMS } from '../data/shopItems.js';
 
 function getDefaultState() {
     return {
-        // Player info
+        // Identity
         heroName: 'Hero',
+        heroImage: null,
         createdAt: Date.now(),
 
         // Core stats
@@ -22,7 +23,7 @@ function getDefaultState() {
             level: 1,
             xp: 0,
             xpToNextLevel: 100,
-            gold: 50,
+            gold: 0,
             hp: 100,
             maxHp: 100,
         },
@@ -69,6 +70,7 @@ function getDefaultState() {
         aiSuggestedQuests: [],
         aiSuggestedHabits: [],
         lastAIGenerationDate: null,
+        portfolioUrls: [],
     };
 }
 
@@ -502,7 +504,7 @@ export class GameEngine {
         if (this.state.lastAIGenerationDate === today) return;
 
         try {
-            const content = await aiAgent.generateDailyContent(this.state.aiApiKey, this.state);
+            const content = await aiAgent.generateDailyContent(this.state.aiApiKey, this.state, this.state.portfolioUrls);
             if (content) {
                 this.state.aiSuggestedQuests = content.quests || [];
                 this.state.aiSuggestedHabits = content.habits || [];
@@ -533,6 +535,15 @@ export class GameEngine {
     setAIEnabled(enabled) {
         this.state.aiEnabled = enabled;
         this._save();
+    }
+
+    setPortfolioUrls(urls) {
+        this.state.portfolioUrls = urls;
+        this._save();
+    }
+
+    getPortfolioUrls() {
+        return this.state.portfolioUrls || [];
     }
 
     acceptAISuggestedQuest(index) {
@@ -630,6 +641,12 @@ export class GameEngine {
         this.state.heroName = name.trim() || 'Hero';
         this._save();
         eventBus.emit('hero:rename', { name: this.state.heroName });
+    }
+
+    setHeroImage(base64Image) {
+        this.state.heroImage = base64Image;
+        this._save();
+        eventBus.emit('hero:image', { image: this.state.heroImage });
     }
 
     // --- State Access ---

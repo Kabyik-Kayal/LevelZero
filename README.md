@@ -1,6 +1,6 @@
 # LevelZero — Gamify Your Life
 
-LevelZero is a beautiful, gamified life-tracker RPG built with pure Vanilla JavaScript, HTML, and CSS. It turns your daily routines into a role-playing game where you are the main character. Complete quests, build habits, earn gold, unlock achievements, and level up your real-life attributes.
+LevelZero is a beautiful, gamified life-tracker RPG built with Vanilla JavaScript, HTML, and CSS, packaged as a standalone desktop app with Electron. It turns your daily routines into a role-playing game where you are the main character. Complete quests, build habits, earn gold, unlock achievements, and level up your real-life attributes.
 
 ## Features
 
@@ -16,13 +16,14 @@ LevelZero is a beautiful, gamified life-tracker RPG built with pure Vanilla Java
 
 ## Tech Stack
 
-- **Frontend**: HTML5, CSS3 (Vanilla), JavaScript (ESModules)
-- **AI Integration**: `@google/genai` (Google Gemini SDK via ESM CDN)
-- **Architecture**: Modular vanilla JS with a custom EventBus and State Manager. No frameworks.
+- **Frontend**: HTML5, CSS3 (Vanilla), JavaScript (ES Modules)
+- **Desktop**: Electron (standalone macOS `.dmg` builds via `electron-builder`)
+- **AI Integration**: `@google/genai` (Google Gemini SDK, bundled via npm)
+- **Architecture**: Modular vanilla JS with a custom EventBus and State Manager. No frontend frameworks.
 
 ## Getting Started
 
-Since the app uses ES Modules, it must be served over a local web server (opening the `index.html` directly in the browser via `file://` will not work due to CORS restrictions on modules).
+### Desktop App (Recommended)
 
 1. **Clone the repository:**
    ```bash
@@ -30,21 +31,29 @@ Since the app uses ES Modules, it must be served over a local web server (openin
    cd LevelZero
    ```
 
-2. **Run a local web server:**
-   You can use python, Node.js, or any simple HTTP server.
-   
-   *Using Python (macOS/Linux usually have this pre-installed):*
+2. **Install dependencies:**
    ```bash
-   python3 -m http.server 8080
-   ```
-   
-   *Using Node.js (via npx):*
-   ```bash
-   npx serve .
+   npm install
    ```
 
-3. **Open the app:**
-   Navigate to `http://localhost:8080` in your web browser.
+3. **Run the app:**
+   ```bash
+   npm start
+   ```
+
+4. **Build a distributable `.dmg`:**
+   ```bash
+   npm run dist
+   ```
+
+### Web (Browser)
+
+You can also run LevelZero in the browser. Since the app uses ES Modules, it must be served over a local web server.
+
+```bash
+python3 -m http.server 8080   # or: npx serve .
+# Open http://localhost:8080
+```
 
 ## Setting up the AI Agent
 
@@ -60,11 +69,17 @@ To enable personalized quests and habits:
 ```text
 LevelZero/
 ├── index.html          # Main entry point and layout
+├── main.js             # Electron main process
+├── preload.js          # Electron preload script
+├── package.json        # npm config & electron-builder settings
+├── assets/             # App icon
+│   └── icon.png
 ├── css/                # Vanilla CSS files structured by component
+│   ├── variables.css
 │   ├── base.css
 │   ├── components.css
 │   ├── animations.css
-│   └── variables.css
+│   └── responsive.css
 └── js/                 # Modular JavaScript structure
     ├── app.js          # Main initializer and event wiring
     ├── engine/         # Core game logic and state
@@ -73,12 +88,13 @@ LevelZero/
     │   ├── SaveManager.js
     │   └── AIAgent.js  # Gemini API integration
     ├── modules/        # UI rendering logic for tabs
-    │   ├── Dashboard.js
-    │   ├── Habits.js
+    │   ├── Activities.js  # Unified quests + habits view
+    │   ├── Character.js
     │   ├── Shop.js
-    │   ├── Profile.js
+    │   ├── Achievements.js
     │   └── Settings.js
     ├── components/     # Reusable UI components
+    │   ├── Header.js
     │   ├── Icons.js
     │   ├── Modal.js
     │   └── Toast.js

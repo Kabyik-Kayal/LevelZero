@@ -4,6 +4,7 @@
 
 import { Icons } from '../components/Icons.js';
 import { showToast } from '../components/Toast.js';
+import { esc } from '../utils/escapeHTML.js';
 
 export function renderShop(state, engine) {
   const { shopItems, customRewards, stats } = state;
@@ -69,7 +70,7 @@ export function renderShop(state, engine) {
             <span style="font-size: 1.5rem;">${Icons[item.icon] || Icons.gift}</span>
           </div>
           <div>
-            <p class="shop-item-name">${item.name}</p>
+            <p class="shop-item-name">${esc(item.name)}</p>
             <div class="shop-item-price">
               ${Icons.coins} ${item.price} Gold
             </div>

@@ -6,6 +6,7 @@ import { Icons } from '../components/Icons.js';
 import { showModal } from '../components/Modal.js';
 import { showToast } from '../components/Toast.js';
 import { aiAgent } from '../engine/AIAgent.js';
+import { esc } from '../utils/escapeHTML.js';
 
 export function renderSettings(state, engine) {
   const { heroName, createdAt, totalDaysActive, loginStreak } = state;
@@ -15,6 +16,7 @@ export function renderSettings(state, engine) {
   const aiEnabled = state.aiEnabled !== false;
   const maskedKey = aiKey ? '••••••••' + aiKey.slice(-4) : '';
   const lastGen = state.lastAIGenerationDate || 'Never';
+  const portfolioUrls = (engine.getPortfolioUrls() || []).join(', ');
 
   return `
     <div class="tab-content" id="tab-settings">
@@ -32,7 +34,7 @@ export function renderSettings(state, engine) {
               <p class="settings-row-desc">Your character's display name</p>
             </div>
             <button class="btn btn-ghost btn-sm" id="settings-rename">
-              ${Icons.edit} ${heroName}
+              ${Icons.edit} ${esc(heroName)}
             </button>
           </div>
           <div class="settings-row">
@@ -93,6 +95,16 @@ export function renderSettings(state, engine) {
               ${Icons.sparkles} Regenerate
             </button>
           </div>
+          <div class="settings-row" style="flex-direction: column; align-items: stretch; gap: var(--space-2);">
+            <div>
+              <p class="settings-row-label">Portfolio URLs</p>
+              <p class="settings-row-desc">Comma-separated URLs for the AI to scrape your online presence</p>
+            </div>
+            <div style="display: flex; gap: var(--space-2);">
+              <input type="text" class="input" id="settings-portfolio-urls" placeholder="https://github.com/you, https://yoursite.com" value="${esc(portfolioUrls)}" style="flex: 1; font-size: var(--text-xs);" />
+              <button class="btn btn-ghost btn-sm" id="settings-save-urls">Save</button>
+            </div>
+          </div>
         </div>
 
         <!-- Data Management -->
@@ -145,14 +157,35 @@ export function renderSettings(state, engine) {
 
 export function attachSettingsEvents(engine, rerender) {
   // Rename
-  const renameBtn = document.getElementById('settings-rename');
-  if (renameBtn) {
-    renameBtn.addEventListener('click', () => {
-      const current = engine.getState().heroName;
-      const newName = prompt('Enter new hero name:', current);
-      if (newName !== null && newName.trim()) {
-        engine.setHeroName(newName.trim());
-        rerender();
+  const container = document.getElementById('tab-settings');
+  if (container) {
+    container.addEventListener('click', (e) => {
+      const renameBtn = e.target.closest('#settings-rename');
+      if (renameBtn) {
+        const current = engine.getState().heroName;
+        showModal({
+          title: 'Rename Hero',
+          body: `<input type="text" id="rename-input" class="input" value="${esc(current)}" style="width: 100%; margin-top: 10px;" autocomplete="off" />`,
+          confirmText: 'Save',
+          onConfirm: () => {
+            const input = document.getElementById('rename-input');
+            if (input) {
+              const newName = input.value.trim();
+              if (newName) {
+                engine.setHeroName(newName);
+                rerender();
+              }
+            }
+          }
+        });
+        // Auto-focus the input
+        setTimeout(() => {
+          const input = document.getElementById('rename-input');
+          if (input) {
+            input.focus();
+            input.select();
+          }
+        }, 10);
       }
     });
   }
@@ -209,6 +242,18 @@ export function attachSettingsEvents(engine, rerender) {
       await engine.refreshAIContent();
       showToast({ title: 'AI suggestions ready!', message: 'Check Quests & Habits tabs', type: 'success', icon: '✨' });
       rerender();
+    });
+  }
+
+  // Portfolio URLs Save
+  const saveUrlsBtn = document.getElementById('settings-save-urls');
+  if (saveUrlsBtn) {
+    saveUrlsBtn.addEventListener('click', () => {
+      const input = document.getElementById('settings-portfolio-urls');
+      if (!input) return;
+      const urls = input.value.split(',').map(u => u.trim()).filter(u => u);
+      engine.setPortfolioUrls(urls);
+      showToast({ title: 'URLs Saved', message: 'Portfolio sources updated.', type: 'success', icon: '🔗' });
     });
   }
 

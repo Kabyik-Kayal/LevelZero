@@ -9,19 +9,6 @@ import { GoogleGenAI } from '@google/genai';
 const CORS_PROXY = 'https://api.allorigins.win/raw?url=';
 const GEMINI_MODEL = 'gemini-3-flash-preview';
 
-// Pages to scrape from the portfolio
-const PORTFOLIO_URLS = [
-    'https://www.kabyik.dev',
-    'https://www.kabyik.dev/blogs/blogs_page.html',
-];
-
-// External profile links to try scraping
-const PROFILE_URLS = [
-    'https://github.com/Kabyik-Kayal',
-    'https://medium.com/@KabyikKayal',
-    'https://www.kaggle.com/kabyik',
-];
-
 const CACHE_KEY = 'levelzero_ai_profile_cache';
 const CACHE_DURATION = 24 * 60 * 60 * 1000; // 24 hours
 
@@ -58,8 +45,9 @@ class AIAgentEngine {
 
     /**
      * Scrape all pages and build a profile summary, with caching
+     * @param {string[]} urls - URLs to scrape
      */
-    async scrapeProfile(forceRefresh = false) {
+    async scrapeProfile(urls = [], forceRefresh = false) {
         // Check cache
         if (!forceRefresh) {
             const cached = this._loadCache();
@@ -69,14 +57,18 @@ class AIAgentEngine {
             }
         }
 
+        if (urls.length === 0) {
+            console.warn('[AIAgent] No portfolio URLs configured.');
+            return null;
+        }
+
         console.log('[AIAgent] Scraping portfolio...');
-        const allPages = [...PORTFOLIO_URLS, ...PROFILE_URLS];
         const results = await Promise.allSettled(
-            allPages.map(url => this._fetchPage(url))
+            urls.map(url => this._fetchPage(url))
         );
 
         const sections = [];
-        allPages.forEach((url, i) => {
+        urls.forEach((url, i) => {
             const result = results[i];
             if (result.status === 'fulfilled' && result.value) {
                 sections.push(`--- Content from ${url} ---\n${result.value}`);
@@ -87,7 +79,7 @@ class AIAgentEngine {
         this._profileCache = profile;
         this._saveCache(profile);
 
-        console.log(`[AIAgent] Scraped ${sections.length}/${allPages.length} pages.`);
+        console.log(`[AIAgent] Scraped ${sections.length}/${urls.length} pages.`);
         return profile;
     }
 
@@ -137,9 +129,12 @@ class AIAgentEngine {
 
     /**
      * Generate personalized quests and habits using Gemini
+     * @param {string} apiKey
+     * @param {object} gameState
+     * @param {string[]} urls - Portfolio URLs to scrape
      */
-    async generateDailyContent(apiKey, gameState) {
-        const profile = await this.scrapeProfile();
+    async generateDailyContent(apiKey, gameState, urls = []) {
+        const profile = await this.scrapeProfile(urls);
         if (!profile) {
             console.warn('[AIAgent] No profile data available.');
             return null;
