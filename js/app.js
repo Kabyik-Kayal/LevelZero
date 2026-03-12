@@ -18,9 +18,15 @@ import { renderSettings, attachSettingsEvents } from './modules/Settings.js';
 
 // --- App State ---
 const ACTIVE_TAB_STORAGE_KEY = 'levelzero_active_tab';
+const DEPLOY_CHECK_INTERVAL_MS = 60000;
 let activeTab = 'activities';
 let introGuideVisible = false;
 let introGuideTimer = null;
+let serviceWorkerReloadPending = false;
+let deploymentCheckTimer = null;
+let deploymentStamp = typeof document !== 'undefined'
+    ? normalizeDeploymentStamp(document.lastModified)
+    : '';
 
 const TABS = [
     { id: 'activities', icon: Icons.sword, label: 'Activities' },
@@ -52,10 +58,90 @@ async function registerServiceWorker() {
     }
 
     try {
-        await navigator.serviceWorker.register('./sw.js', { scope: './' });
+        const registration = await navigator.serviceWorker.register('./sw.js', { scope: './' });
+        bindServiceWorkerUpdates(registration);
+        registration.update().catch(err => {
+            console.warn('[App] Service worker update check failed:', err);
+        });
+        return registration;
     } catch (err) {
         console.warn('[App] Service worker registration failed:', err);
     }
+}
+
+function bindServiceWorkerUpdates(registration) {
+    if (bindServiceWorkerUpdates.bound) return;
+    bindServiceWorkerUpdates.bound = true;
+
+    const activateWorker = (worker) => {
+        if (!worker || serviceWorkerReloadPending || !navigator.serviceWorker.controller) return;
+        serviceWorkerReloadPending = true;
+        worker.postMessage({ type: 'SKIP_WAITING' });
+    };
+
+    if (registration.waiting) {
+        activateWorker(registration.waiting);
+    }
+
+    registration.addEventListener('updatefound', () => {
+        const nextWorker = registration.installing;
+        if (!nextWorker) return;
+
+        nextWorker.addEventListener('statechange', () => {
+            if (nextWorker.state === 'installed') {
+                activateWorker(nextWorker);
+            }
+        });
+    });
+
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+        if (serviceWorkerReloadPending) {
+            window.location.reload();
+        }
+    });
+}
+
+bindServiceWorkerUpdates.bound = false;
+
+function normalizeDeploymentStamp(value) {
+    if (!value) return '';
+    const parsed = Date.parse(value);
+    return Number.isNaN(parsed) ? String(value) : String(parsed);
+}
+
+async function fetchDeploymentStamp() {
+    try {
+        const response = await fetch(`./index.html?__levelzero_update_check=${Date.now()}`, {
+            method: 'HEAD',
+            cache: 'no-store',
+        });
+
+        if (!response.ok) return null;
+        return normalizeDeploymentStamp(
+            response.headers.get('last-modified') || response.headers.get('etag')
+        );
+    } catch (err) {
+        return null;
+    }
+}
+
+function startDeploymentRefreshWatch() {
+    if (location.protocol === 'file:' || deploymentCheckTimer) return;
+
+    const check = async () => {
+        const latestStamp = await fetchDeploymentStamp();
+        if (!latestStamp) return;
+
+        if (deploymentStamp && latestStamp !== deploymentStamp) {
+            window.location.reload();
+            return;
+        }
+
+        deploymentStamp = latestStamp;
+    };
+
+    check();
+    deploymentCheckTimer = setInterval(check, DEPLOY_CHECK_INTERVAL_MS);
 }
 
 function persistActiveTab() {
@@ -108,6 +194,7 @@ function scheduleIntroGuideCheck() {
 // --- Initialize ---
 async function init() {
     await registerServiceWorker();
+    startDeploymentRefreshWatch();
     restoreActiveTab();
     gameEngine.init();
     setupEventListeners();

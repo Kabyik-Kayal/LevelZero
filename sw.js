@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'levelzero-cache-v2';
+const CACHE_VERSION = 'levelzero-cache-v3';
 const APP_SHELL = [
     './',
     './index.html',
@@ -35,19 +35,40 @@ const APP_SHELL = [
 self.addEventListener('install', event => {
     event.waitUntil(
         caches.open(CACHE_VERSION)
-            .then(cache => cache.addAll(APP_SHELL))
+            .then(cache => cache.addAll(APP_SHELL.map(asset => new Request(asset, { cache: 'reload' }))))
             .then(() => self.skipWaiting())
     );
 });
 
+self.addEventListener('message', event => {
+    if (event.data?.type === 'SKIP_WAITING') {
+        self.skipWaiting();
+    }
+});
+
 self.addEventListener('activate', event => {
-    event.waitUntil(
-        caches.keys().then(keys => Promise.all(
-            keys
-                .filter(key => key !== CACHE_VERSION)
-                .map(key => caches.delete(key))
-        )).then(() => self.clients.claim())
-    );
+    event.waitUntil((async () => {
+        const keys = await caches.keys();
+        const previousKeys = keys.filter(key => key !== CACHE_VERSION);
+
+        await Promise.all(previousKeys.map(key => caches.delete(key)));
+        await self.clients.claim();
+
+        if (previousKeys.length > 0) {
+            const clients = await self.clients.matchAll({ type: 'window', includeUncontrolled: true });
+            await Promise.all(clients.map(client => {
+                try {
+                    const clientUrl = new URL(client.url);
+                    if (clientUrl.origin === self.location.origin) {
+                        return client.navigate(client.url);
+                    }
+                } catch (err) {
+                    console.warn('[SW] Failed to refresh client:', err);
+                }
+                return Promise.resolve();
+            }));
+        }
+    })());
 });
 
 self.addEventListener('fetch', event => {
@@ -60,32 +81,25 @@ self.addEventListener('fetch', event => {
         return;
     }
 
-    if (request.mode === 'navigate') {
-        event.respondWith(
-            fetch(request)
-                .then(response => {
-                    const copy = response.clone();
-                    caches.open(CACHE_VERSION).then(cache => cache.put('./index.html', copy));
-                    return response;
-                })
-                .catch(async () => (await caches.match(request)) || caches.match('./index.html'))
-        );
-        return;
-    }
+    event.respondWith((async () => {
+        const cache = await caches.open(CACHE_VERSION);
 
-    event.respondWith(
-        caches.match(request).then(cached => {
+        try {
+            const response = await fetch(request);
+            if (response && response.ok && response.type !== 'opaque') {
+                cache.put(request, response.clone());
+            }
+            return response;
+        } catch (err) {
+            const cached = await caches.match(request);
             if (cached) return cached;
 
-            return fetch(request).then(response => {
-                if (!response || response.status !== 200 || response.type === 'opaque') {
-                    return response;
-                }
+            if (request.mode === 'navigate') {
+                const shell = await caches.match('./index.html');
+                if (shell) return shell;
+            }
 
-                const copy = response.clone();
-                caches.open(CACHE_VERSION).then(cache => cache.put(request, copy));
-                return response;
-            }).catch(() => caches.match('./index.html'));
-        })
-    );
+            throw err;
+        }
+    })());
 });
