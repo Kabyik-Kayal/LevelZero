@@ -4,17 +4,39 @@
 // quests & habits via Google Gemini API
 // ============================================
 
-import { GoogleGenAI } from '@google/genai';
+import { saveManager } from './SaveManager.js';
 
 const CORS_PROXY = 'https://api.allorigins.win/raw?url=';
 const GEMINI_MODEL = 'gemini-3-flash-preview';
-
-const CACHE_KEY = 'levelzero_ai_profile_cache';
+const GEMINI_SDK_URL = 'https://esm.sh/@google/genai@0.7.0';
 const CACHE_DURATION = 24 * 60 * 60 * 1000; // 24 hours
 
 class AIAgentEngine {
     constructor() {
         this._profileCache = null;
+        this._sdkPromise = null;
+    }
+
+    async _loadGoogleGenAI() {
+        if (!this._sdkPromise) {
+            this._sdkPromise = import(GEMINI_SDK_URL)
+                .then(module => module.GoogleGenAI)
+                .catch(err => {
+                    this._sdkPromise = null;
+                    throw err;
+                });
+        }
+
+        return this._sdkPromise;
+    }
+
+    _isOfflineError(err) {
+        const message = String(err?.message || '').toLowerCase();
+        return !navigator.onLine
+            || message.includes('failed to fetch')
+            || message.includes('networkerror')
+            || message.includes('load failed')
+            || err?.name === 'TypeError';
     }
 
     // --- Profile Scraping ---
@@ -85,7 +107,7 @@ class AIAgentEngine {
 
     _loadCache() {
         try {
-            const raw = localStorage.getItem(CACHE_KEY);
+            const raw = localStorage.getItem(saveManager.getAICacheStorageKey());
             if (!raw) return null;
             const { data, timestamp } = JSON.parse(raw);
             if (Date.now() - timestamp > CACHE_DURATION) return null;
@@ -97,7 +119,7 @@ class AIAgentEngine {
 
     _saveCache(data) {
         try {
-            localStorage.setItem(CACHE_KEY, JSON.stringify({
+            localStorage.setItem(saveManager.getAICacheStorageKey(), JSON.stringify({
                 data,
                 timestamp: Date.now(),
             }));
@@ -114,6 +136,7 @@ class AIAgentEngine {
     async testConnection(apiKey) {
         console.log('[AIAgent] Testing connection with GoogleGenAI SDK...');
         try {
+            const GoogleGenAI = await this._loadGoogleGenAI();
             const ai = new GoogleGenAI({ apiKey });
             const response = await ai.models.generateContent({
                 model: GEMINI_MODEL,
@@ -122,7 +145,11 @@ class AIAgentEngine {
             console.log('[AIAgent] ✓ Connection successful:', response.text);
             return true;
         } catch (err) {
-            console.error('[AIAgent] Test connection error:', err);
+            if (this._isOfflineError(err)) {
+                console.warn('[AIAgent] Gemini SDK unavailable while offline.');
+            } else {
+                console.error('[AIAgent] Test connection error:', err);
+            }
             return false;
         }
     }
@@ -191,13 +218,14 @@ Respond with ONLY valid JSON, no markdown, no backticks, no explanation:
 
         try {
             console.log(`[AIAgent] Generating with model: ${GEMINI_MODEL}...`);
+            const GoogleGenAI = await this._loadGoogleGenAI();
             const ai = new GoogleGenAI({ apiKey });
             const response = await ai.models.generateContent({
                 model: GEMINI_MODEL,
                 contents: prompt,
                 config: {
                     temperature: 0.9,
-                    response_mime_type: "application/json",
+                    response_mime_type: 'application/json',
                 }
             });
 
@@ -213,7 +241,11 @@ Respond with ONLY valid JSON, no markdown, no backticks, no explanation:
             const parsed = JSON.parse(cleaned);
             return this._validateContent(parsed);
         } catch (err) {
-            console.error(`[AIAgent] Generation failed:`, err.message);
+            if (this._isOfflineError(err)) {
+                console.warn('[AIAgent] AI generation unavailable offline.');
+            } else {
+                console.error('[AIAgent] Generation failed:', err.message);
+            }
             return null;
         }
     }

@@ -82,6 +82,36 @@
         margin: var(--space-4);
         max-height: calc(100vh - var(--space-8));
     }
+
+    .settings-page-header {
+        align-items: flex-start;
+    }
+
+    .settings-item {
+        grid-template-columns: 1fr;
+        align-items: stretch;
+        padding: var(--space-4);
+    }
+
+    .settings-item-side,
+    .settings-inline-group,
+    .settings-inline-end {
+        justify-content: flex-start;
+    }
+
+    .settings-inline-group {
+        flex-wrap: wrap;
+    }
+
+    .settings-inline-value {
+        white-space: normal;
+        margin-right: 0;
+    }
+
+    .settings-field-row {
+        flex-direction: column;
+        width: 100%;
+    }
 }
 
 /* --- Tablet (640px - 1023px) --- */

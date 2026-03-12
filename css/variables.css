@@ -4,55 +4,60 @@
 
 :root {
   /* --- Color Palette --- */
-  --color-bg-primary: #0a0a0f;
-  --color-bg-secondary: #111118;
-  --color-bg-card: rgba(17, 17, 24, 0.8);
-  --color-bg-card-hover: rgba(25, 25, 35, 0.9);
-  --color-bg-input: #1a1a25;
-  --color-bg-overlay: rgba(0, 0, 0, 0.6);
+  --color-bg-primary: #d8d0c1;
+  --color-bg-secondary: #e7dfd0;
+  --color-bg-card: rgba(247, 242, 233, 0.88);
+  --color-bg-card-hover: rgba(251, 247, 240, 0.96);
+  --color-bg-input: #d7cdbb;
+  --color-bg-overlay: rgba(52, 43, 34, 0.42);
 
-  --color-border: rgba(255, 255, 255, 0.06);
-  --color-border-hover: rgba(255, 255, 255, 0.12);
-  --color-border-active: rgba(99, 102, 241, 0.4);
+  --color-border: rgba(94, 77, 59, 0.16);
+  --color-border-hover: rgba(94, 77, 59, 0.26);
+  --color-border-active: rgba(118, 96, 73, 0.34);
 
   /* Accent Colors */
-  --color-indigo: #6366f1;
-  --color-indigo-light: #818cf8;
-  --color-indigo-dark: #4f46e5;
-  --color-indigo-glow: rgba(99, 102, 241, 0.25);
+  --color-indigo: #7c8f7a;
+  --color-indigo-light: #95a992;
+  --color-indigo-dark: #677763;
+  --color-indigo-glow: rgba(124, 143, 122, 0.18);
 
-  --color-gold: #f59e0b;
-  --color-gold-light: #fbbf24;
-  --color-gold-glow: rgba(245, 158, 11, 0.2);
+  --color-gold: #b78c49;
+  --color-gold-light: #cba164;
+  --color-gold-glow: rgba(183, 140, 73, 0.2);
 
-  --color-red: #ef4444;
-  --color-red-light: #f87171;
-  --color-red-glow: rgba(239, 68, 68, 0.2);
+  --color-red: #b56d60;
+  --color-red-light: #c98a7d;
+  --color-red-glow: rgba(181, 109, 96, 0.18);
 
-  --color-green: #22c55e;
-  --color-green-light: #4ade80;
-  --color-green-glow: rgba(34, 197, 94, 0.2);
+  --color-green: #729067;
+  --color-green-light: #8aa57f;
+  --color-green-glow: rgba(114, 144, 103, 0.18);
 
-  --color-orange: #f97316;
-  --color-orange-light: #fb923c;
-  --color-orange-glow: rgba(249, 115, 22, 0.2);
+  --color-orange: #b77a4f;
+  --color-orange-light: #ca936e;
+  --color-orange-glow: rgba(183, 122, 79, 0.18);
 
-  --color-blue: #3b82f6;
-  --color-blue-light: #60a5fa;
-  --color-blue-glow: rgba(59, 130, 246, 0.2);
+  --color-blue: #7b93a3;
+  --color-blue-light: #93a8b6;
+  --color-blue-glow: rgba(123, 147, 163, 0.18);
 
-  --color-cyan: #06b6d4;
-  --color-purple: #a855f7;
-  --color-pink: #ec4899;
+  --color-cyan: #6f9b98;
+  --color-purple: #9683a8;
+  --color-pink: #bc8f97;
 
   /* Text Colors */
-  --color-text-primary: #f1f5f9;
-  --color-text-secondary: #94a3b8;
-  --color-text-muted: #475569;
-  --color-text-disabled: #334155;
+  --color-text-primary: #3d3025;
+  --color-text-secondary: #69594a;
+  --color-text-muted: #8a7968;
+  --color-text-disabled: #a19383;
+  --color-text-strong: #4f3f31;
+  --color-text-on-accent: #f4ecdf;
+  --color-text-on-warm: #5a4330;
 
   /* --- Typography --- */
-  --font-primary: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-primary: 'Prata', serif;
+  --font-display: 'Renitah', cursive;
+  --font-ui: 'Prata', serif;
   --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
 
   --text-xs: 0.65rem;
@@ -97,14 +102,17 @@
   --radius-full: 9999px;
 
   /* --- Shadows --- */
-  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4);
-  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
-  --shadow-lg: 0 8px 30px rgba(0, 0, 0, 0.5);
-  --shadow-xl: 0 20px 60px rgba(0, 0, 0, 0.6);
+  --shadow-sm: 0 1px 2px rgba(84, 68, 52, 0.14), 0 1px 0 rgba(255, 251, 242, 0.85) inset;
+  --shadow-md: 0 8px 20px rgba(96, 79, 59, 0.16), 0 1px 0 rgba(255, 250, 244, 0.85) inset;
+  --shadow-lg: 0 18px 36px rgba(96, 79, 59, 0.18), 0 1px 0 rgba(255, 250, 244, 0.9) inset;
+  --shadow-xl: 0 28px 60px rgba(96, 79, 59, 0.24), 0 1px 0 rgba(255, 250, 244, 0.92) inset;
   --shadow-glow-indigo: 0 0 20px var(--color-indigo-glow);
   --shadow-glow-gold: 0 0 20px var(--color-gold-glow);
   --shadow-glow-red: 0 0 15px var(--color-red-glow);
   --shadow-glow-green: 0 0 15px var(--color-green-glow);
+  --shadow-raised: 0 14px 28px rgba(101, 82, 60, 0.16), 0 2px 0 rgba(255, 251, 244, 0.95) inset, 0 -2px 0 rgba(194, 180, 158, 0.48) inset;
+  --shadow-pressed: inset 0 3px 6px rgba(122, 102, 80, 0.18), inset 0 1px 0 rgba(255, 251, 244, 0.75);
+  --shadow-panel: 0 20px 40px rgba(90, 72, 52, 0.18), inset 0 1px 0 rgba(255, 250, 244, 0.95), inset 0 -1px 0 rgba(184, 168, 145, 0.5);
 
   /* --- Transitions --- */
   --transition-fast: 150ms ease;
@@ -121,9 +129,9 @@
   --z-tooltip: 70;
 
   /* --- Glassmorphism --- */
-  --glass-bg: rgba(17, 17, 24, 0.65);
-  --glass-border: rgba(255, 255, 255, 0.08);
-  --glass-blur: blur(16px);
+  --glass-bg: rgba(247, 242, 233, 0.86);
+  --glass-border: rgba(120, 100, 77, 0.14);
+  --glass-blur: blur(10px);
 
   /* --- Layout --- */
   --max-width: 900px;

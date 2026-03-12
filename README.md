@@ -1,115 +1,82 @@
-# LevelZero — Gamify Your Life
+# ⚔️ LevelZero — Gamify Your Life
 
-LevelZero is a beautiful, gamified life-tracker RPG built with Vanilla JavaScript, HTML, and CSS, packaged as a standalone desktop app with Electron. It turns your daily routines into a role-playing game where you are the main character. Complete quests, build habits, earn gold, unlock achievements, and level up your real-life attributes.
+**LevelZero** is a desktop role-playing game where YOU are the main character! 
 
-## Features
+**Live Website:** [https://www.kabyik.dev/LevelZero/](https://www.kabyik.dev/LevelZero/)
 
-- **Personalized AI Agent**: Connects to the Gemini API to scrape your online portfolio and dynamically generate personalized daily quests and habits tailored to your career goals and interests. (Requires a free Gemini API key).
-- **Quest System**: Add one-off tasks (quests) with different difficulties (Easy, Medium, Hard, Epic) and categories (Strength, Intelligence, Charisma, Vitality).
-- **Habit Tracker**: Build daily consistency. Habits track your current and longest streaks.
-- **Starter Packs**: Quick-start your journey with curated packs of quests and habits (e.g., MLOps Grind, Desk Jockey Fitness, Otaku Recovery).
-- **RPG Mechanics**: Earn XP to level up, and Gold to spend in the Shop. Lose HP if you fail to complete your daily quests.
-- **Shop & Inventory**: Buy potions, titles, and themes with your hard-earned gold.
-- **Achievements**: Unlock badges for reaching milestones.
-- **Local Storage**: Your progress is saved entirely in your browser. No database required.
-- **Data Portability**: Export and import your save file as JSON to backup or transfer your progress.
+Instead of fighting dragons in a fantasy world, LevelZero turns your actual, real-life goals and daily routines into an RPG. Complete your daily quests, build strong habits, earn gold, and level up your real-life attributes. 
 
-## Tech Stack
+If you fail to do your habits, your character takes damage—so stay consistent to survive!
 
-- **Frontend**: HTML5, CSS3 (Vanilla), JavaScript (ES Modules)
-- **Desktop**: Electron (standalone macOS `.dmg` builds via `electron-builder`)
-- **AI Integration**: `@google/genai` (Google Gemini SDK, bundled via npm)
-- **Architecture**: Modular vanilla JS with a custom EventBus and State Manager. No frontend frameworks.
+---
 
-## Getting Started
+## ✨ Features
 
-### Desktop App (Recommended)
+- **Personalized AI Dungeon Master**: Connects to an AI to generate custom, personalized daily quests tailored to your career goals and interests!
+- **Epic Quest System**: Create one-off tasks (quests) with varying difficulties (Easy, Medium, Hard, Epic). Earning XP boosts your Strength, Intelligence, Charisma, and Vitality!
+- **Daily Habit Tracker**: Build consistency. Watch your "streak" go up as you chain daily successful habit completions. 
+- **Consequences**: It's a real game. Earn Gold to spend in the Shop. Lose HP (Health Points) if you skip your daily habits. If your HP hits zero, you die and lose all your streaks!
+- **Shop & Inventory**: Buy potions, rare titles, and custom themes with your hard-earned gold.
+- **Achievements**: Unlock specialized badges for reaching epic milestones. Can you find the secret ones?
+- **Total Privacy**: Your game save is stored entirely on your computer. No cloud databases parsing your daily habits.
 
-1. **Clone the repository:**
+---
+
+## 🎮 How to Play (The Core Loop)
+
+1. **Add Quests & Habits**: Every day, write down the things you need to do.
+2. **Complete Them**: Click the empty circles to cross them off.
+3. **Get Rewarded**: You instantly earn **XP** and **Gold**.
+4. **Level Up**: When you get enough XP, you level up and earn a new Hero Title!
+5. **Spend Gold**: Go to the **Bazaar** (Shop) tab to spend your gold on cool rewards.
+
+---
+
+## 🚀 How to Install (Noob-Friendly Guide)
+
+LevelZero runs as an app on your computer. Here is the absolute easiest way to get it running!
+
+### **Step 1: Download the Files**
+Click the green **"Code"** button at the top right of this page and click **"Download ZIP"**. Unzip the folder somewhere on your computer (like your Desktop).
+
+### **Step 2: Download Node.js**
+You need a small program called Node.js to run the game.
+1. Go to [nodejs.org](https://nodejs.org/)
+2. Download and install the version that says **"Recommended for Most Users"**. (Just click Next on everything during the installer).
+
+### **Step 3: Open your Terminal / Command Prompt**
+- **On Mac**: Press `Cmd + Space`, type `Terminal`, and hit Enter.
+- **On Windows**: Press the `Windows Key`, type `cmd`, and hit Enter.
+
+### **Step 4: Run the Game!**
+You just need to type three commands into that black box. Press **Enter** after each line:
+
+1. Tell the computer to go to the unzipped game folder (Replace `Path/To/LevelZero` with wherever you put the folder. *Tip: You can just type `cd ` and then drag the folder into the terminal window!*):
    ```bash
-   git clone https://github.com/yourusername/LevelZero.git
-   cd LevelZero
+   cd Path/To/LevelZero
    ```
 
-2. **Install dependencies:**
+2. Tell it to download the required game files (this takes a minute):
    ```bash
    npm install
    ```
 
-3. **Run the app:**
+3. Launch the game!
    ```bash
    npm start
    ```
 
-4. **Build a distributable `.dmg`:**
-   ```bash
-   npm run dist
-   ```
+*You only have to do the `npm install` part once! Next time you want to play, just open your terminal, do the `cd` command, and type `npm start`!*
 
-### Web (Browser)
+---
 
-You can also run LevelZero in the browser. Since the app uses ES Modules, it must be served over a local web server.
+## 🤖 Setting up the AI (Highly Recommended!)
 
-```bash
-python3 -m http.server 8080   # or: npx serve .
-# Open http://localhost:8080
-```
+LevelZero features an incredibly cool AI integration that acts like your personal Dungeon Master. Here is how to turn it on:
 
-## Setting up the AI Agent
-
-To enable personalized quests and habits:
-1. Get a free API key from [Google AI Studio](https://aistudio.google.com/apikey).
-2. Inside the app, click on the **Settings** tab.
-3. Under the **AI Agent** section, click **Set Key** and paste your Gemini API key.
-4. Click **Test** to ensure the connection works.
-5. Click **Regenerate** to scrape your portfolio and generate your first set of personalized suggestions!
-
-## Project Structure
-
-```text
-LevelZero/
-├── index.html          # Main entry point and layout
-├── main.js             # Electron main process
-├── preload.js          # Electron preload script
-├── package.json        # npm config & electron-builder settings
-├── assets/             # App icon
-│   └── icon.png
-├── css/                # Vanilla CSS files structured by component
-│   ├── variables.css
-│   ├── base.css
-│   ├── components.css
-│   ├── animations.css
-│   └── responsive.css
-└── js/                 # Modular JavaScript structure
-    ├── app.js          # Main initializer and event wiring
-    ├── engine/         # Core game logic and state
-    │   ├── GameEngine.js
-    │   ├── EventBus.js
-    │   ├── SaveManager.js
-    │   └── AIAgent.js  # Gemini API integration
-    ├── modules/        # UI rendering logic for tabs
-    │   ├── Activities.js  # Unified quests + habits view
-    │   ├── Character.js
-    │   ├── Shop.js
-    │   ├── Achievements.js
-    │   └── Settings.js
-    ├── components/     # Reusable UI components
-    │   ├── Header.js
-    │   ├── Icons.js
-    │   ├── Modal.js
-    │   └── Toast.js
-    └── data/           # Hardcoded game content
-        ├── achievements.js
-        ├── dailyQuests.js
-        ├── shopItems.js
-        ├── starterPacks.js
-        └── titles.js
-```
-
-## Contributing
-
-Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
-
-## License
-
-[MIT](https://choosealicense.com/licenses/mit/)
+1. Get a **100% free** API key from [Google AI Studio](https://aistudio.google.com/apikey) by clicking "Get API Key". 
+2. Open **LevelZero**, and click on the **Config (Settings)** tab on the far right.
+3. Under the **AI Agent** section, click **Set Key** and paste that long code you just got.
+4. Click **Test** to make sure it connected successfully.
+5. *(Optional)* Scroll down to **Portfolio URLs** and put in a link to your Website, LinkedIn, or GitHub.
+6. Click **Regenerate**. The AI will scan your links and automatically generate a custom set of daily quests and habits perfectly tailored to what you want to achieve!

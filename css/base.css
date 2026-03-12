@@ -2,7 +2,13 @@
    LevelZero Base Styles
    ============================================ */
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Prata&display=swap');
+
+@font-face {
+    font-family: 'Renitah';
+    src: local('Renitah'), local('Renitah Regular');
+    font-display: swap;
+}
 
 /* --- Reset --- */
 *,
@@ -21,13 +27,16 @@ html {
 
 body {
     font-family: var(--font-primary);
-    background: var(--color-bg-primary);
+    background:
+        radial-gradient(circle at top, rgba(255, 249, 239, 0.92), transparent 38%),
+        linear-gradient(180deg, #d9d1c3 0%, #cfc4b2 45%, #c7baa8 100%);
     color: var(--color-text-primary);
     line-height: var(--leading-normal);
     min-height: 100vh;
     overflow-x: hidden;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    font-weight: 400;
 }
 
 /* Subtle animated background */
@@ -36,17 +45,33 @@ body::before {
     position: fixed;
     inset: 0;
     background:
-        radial-gradient(ellipse at 20% 0%, rgba(99, 102, 241, 0.08) 0%, transparent 50%),
-        radial-gradient(ellipse at 80% 100%, rgba(245, 158, 11, 0.05) 0%, transparent 50%),
-        radial-gradient(ellipse at 50% 50%, rgba(139, 92, 246, 0.03) 0%, transparent 70%);
+        linear-gradient(180deg, rgba(255, 251, 244, 0.55), rgba(255, 255, 255, 0) 20%),
+        radial-gradient(circle at 15% 15%, rgba(255, 249, 239, 0.45) 0%, transparent 26%),
+        radial-gradient(circle at 85% 10%, rgba(184, 166, 140, 0.18) 0%, transparent 24%),
+        radial-gradient(circle at 50% 100%, rgba(124, 143, 122, 0.12) 0%, transparent 28%);
+    opacity: 0.95;
     z-index: -1;
     pointer-events: none;
+}
+
+body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+        linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
+    background-size: 14px 14px;
+    mix-blend-mode: soft-light;
+    opacity: 0.18;
+    pointer-events: none;
+    z-index: -1;
 }
 
 /* --- Selection --- */
 ::selection {
     background: rgba(99, 102, 241, 0.3);
-    color: #fff;
+    color: var(--color-text-on-accent);
 }
 
 /* --- Scrollbar --- */
@@ -74,14 +99,23 @@ h3,
 h4,
 h5,
 h6 {
+    font-family: var(--font-display);
     line-height: var(--leading-tight);
-    letter-spacing: var(--tracking-tight);
-    font-weight: var(--font-bold);
+    letter-spacing: -0.01em;
+    font-weight: 400;
 }
 
 a {
-    color: var(--color-indigo-light);
+    color: var(--color-indigo-dark);
     text-decoration: none;
+}
+
+p,
+li,
+input,
+textarea,
+select {
+    letter-spacing: 0.01em;
 }
 
 /* --- Form Elements --- */
@@ -110,10 +144,10 @@ textarea:focus {
 
 select {
     appearance: none;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%2394a3b8' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10l-5 5z'/%3E%3C/svg%3E");
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' fill='none' stroke='%23705f4d' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round' viewBox='0 0 16 16'%3E%3Cpath d='m3.5 6 4.5 4 4.5-4'/%3E%3C/svg%3E");
     background-repeat: no-repeat;
-    background-position: right 0.75rem center;
-    padding-right: 2rem;
+    background-position: right 0.95rem center;
+    padding-right: 2.5rem;
 }
 
 /* --- Utility --- */

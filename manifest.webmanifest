@@ -1,0 +1,17 @@
+{
+  "name": "LevelZero",
+  "short_name": "LevelZero",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#d9d1c3",
+  "theme_color": "#8a755f",
+  "description": "Turn your real life into an RPG with quests, habits, rewards, and offline-safe progress.",
+  "icons": [
+    {
+      "src": "assets/icon.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

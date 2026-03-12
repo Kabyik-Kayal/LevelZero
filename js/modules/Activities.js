@@ -6,6 +6,140 @@ import { Icons } from '../components/Icons.js';
 import { STARTER_PACKS } from '../data/starterPacks.js';
 import { esc } from '../utils/escapeHTML.js';
 
+const CUSTOM_SELECT_CHEVRON = `
+  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <path d="m3.5 6 4.5 4 4.5-4" />
+  </svg>
+`;
+
+let customSelectHandlersBound = false;
+
+function getCustomOptionMeta(option) {
+  const iconName = option.dataset.icon || '';
+  const icon = iconName && Icons[iconName]
+    ? `<span class="custom-select-option-icon">${Icons[iconName]}</span>`
+    : '';
+
+  return {
+    value: option.value,
+    label: option.textContent.trim(),
+    icon,
+  };
+}
+
+function updateCustomSelectUI(selectEl, wrapper) {
+  const selectedOption = selectEl.selectedOptions[0];
+  if (!selectedOption) return;
+
+  const triggerText = wrapper.querySelector('.custom-select-trigger-text');
+  const triggerIcon = wrapper.querySelector('.custom-select-trigger-icon');
+  const { value, label, icon } = getCustomOptionMeta(selectedOption);
+
+  if (triggerText) triggerText.textContent = label;
+  if (triggerIcon) triggerIcon.innerHTML = icon;
+
+  wrapper.querySelectorAll('.custom-select-option').forEach(optionBtn => {
+    optionBtn.classList.toggle('selected', optionBtn.dataset.value === value);
+  });
+}
+
+function bindCustomSelectGlobalHandlers() {
+  if (customSelectHandlersBound) return;
+
+  document.addEventListener('click', (e) => {
+    document.querySelectorAll('.custom-select.is-open').forEach((dropdown) => {
+      if (!dropdown.contains(e.target)) {
+        dropdown.classList.remove('is-open');
+      }
+    });
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      document.querySelectorAll('.custom-select.is-open').forEach(dropdown => {
+        dropdown.classList.remove('is-open');
+      });
+    }
+  });
+
+  customSelectHandlersBound = true;
+}
+
+function initCustomSelect(selectEl) {
+  if (!selectEl || selectEl.dataset.customSelectReady === 'true') return;
+
+  const options = Array.from(selectEl.options);
+  const selectedOption = selectEl.selectedOptions[0] || options[0];
+  const selectedMeta = selectedOption ? getCustomOptionMeta(selectedOption) : { label: '', icon: '' };
+
+  const wrapper = document.createElement('div');
+  wrapper.className = 'custom-select';
+  wrapper.innerHTML = `
+    <button type="button" class="custom-select-trigger" aria-haspopup="listbox" aria-expanded="false">
+      <span class="custom-select-trigger-main">
+        <span class="custom-select-trigger-icon">${selectedMeta.icon}</span>
+        <span class="custom-select-trigger-text">${esc(selectedMeta.label)}</span>
+      </span>
+      <span class="custom-select-trigger-chevron">${CUSTOM_SELECT_CHEVRON}</span>
+    </button>
+    <div class="custom-select-menu" role="listbox">
+      ${options.map(option => {
+        const meta = getCustomOptionMeta(option);
+        const selectedClass = option.selected ? 'selected' : '';
+        return `
+          <button
+            type="button"
+            class="custom-select-option ${selectedClass}"
+            role="option"
+            data-value="${esc(meta.value)}"
+            aria-selected="${option.selected ? 'true' : 'false'}"
+          >
+            ${meta.icon}
+            <span>${esc(meta.label)}</span>
+          </button>
+        `;
+      }).join('')}
+    </div>
+  `;
+
+  selectEl.parentNode.insertBefore(wrapper, selectEl);
+  wrapper.appendChild(selectEl);
+  selectEl.classList.add('custom-select-native');
+  selectEl.dataset.customSelectReady = 'true';
+
+  const trigger = wrapper.querySelector('.custom-select-trigger');
+  const menu = wrapper.querySelector('.custom-select-menu');
+
+  trigger.addEventListener('click', () => {
+    const isOpen = wrapper.classList.toggle('is-open');
+    trigger.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+  });
+
+  menu.addEventListener('click', (e) => {
+    const optionBtn = e.target.closest('.custom-select-option');
+    if (!optionBtn) return;
+
+    const nextValue = optionBtn.dataset.value;
+    if (selectEl.value !== nextValue) {
+      selectEl.value = nextValue;
+      selectEl.dispatchEvent(new Event('change', { bubbles: true }));
+    }
+
+    updateCustomSelectUI(selectEl, wrapper);
+    wrapper.classList.remove('is-open');
+    trigger.setAttribute('aria-expanded', 'false');
+  });
+
+  selectEl.addEventListener('change', () => {
+    updateCustomSelectUI(selectEl, wrapper);
+  });
+}
+
+function initActivityCustomSelects() {
+  bindCustomSelectGlobalHandlers();
+  document.querySelectorAll('#activity-form select.select').forEach(initCustomSelect);
+}
+
 // --- Starter Pack Pickers ---
 
 function renderPackPicker() {
@@ -112,7 +246,7 @@ export function renderActivities(state, engine) {
               <div class="quest-tags">
                 <span class="badge badge-${dailyQuest.difficulty}">${dailyQuest.difficulty}</span>
                 <span class="badge badge-${dailyQuest.category}">${dailyQuest.category}</span>
-                <span class="badge" style="background: var(--color-gold-glow); color: var(--color-gold);">${Icons.star} daily</span>
+                <span class="badge badge-daily">${Icons.star}<span>Daily</span></span>
               </div>
             </div>
           </div>
@@ -252,10 +386,10 @@ export function renderActivities(state, engine) {
             <option value="epic">Epic (100 XP)</option>
           </select>
           <select class="select" id="activity-category">
-            <option value="intelligence">${Icons.brain} Intelligence</option>
-            <option value="strength">${Icons.muscle} Strength</option>
-            <option value="charisma">${Icons.zap} Charisma</option>
-            <option value="vitality">${Icons.heart} Vitality</option>
+            <option value="intelligence" data-icon="brain">Intelligence</option>
+            <option value="strength" data-icon="muscle">Strength</option>
+            <option value="charisma" data-icon="zap">Charisma</option>
+            <option value="vitality" data-icon="heart">Vitality</option>
           </select>
         </div>
       </form>
@@ -284,6 +418,7 @@ export function renderActivities(state, engine) {
 // --- Event Binding ---
 
 export function attachActivitiesEvents(engine, rerender) {
+  initActivityCustomSelects();
 
   // --- Habit Events ---
 
@@ -330,7 +465,8 @@ export function attachActivitiesEvents(engine, rerender) {
       modeHabitBtn.style.boxShadow = mode === 'habit' ? '0 0 20px rgba(249,115,22,0.3)' : 'none';
     }
     if (difficultySelect) {
-      difficultySelect.style.display = mode === 'quest' ? '' : 'none';
+      const difficultyField = difficultySelect.closest('.custom-select') || difficultySelect;
+      difficultyField.style.display = mode === 'quest' ? '' : 'none';
     }
     if (activityInput) {
       activityInput.placeholder = mode === 'quest' ? 'Enter a new life quest...' : 'Add a new daily habit...';

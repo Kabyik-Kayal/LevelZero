@@ -7,6 +7,7 @@ import { eventBus } from './engine/EventBus.js';
 import { renderHeader } from './components/Header.js';
 import { showToast } from './components/Toast.js';
 import { Icons } from './components/Icons.js';
+import { showModal } from './components/Modal.js';
 
 import { renderActivities, attachActivitiesEvents } from './modules/Activities.js';
 import { renderCharacter, attachCharacterEvents } from './modules/Character.js';
@@ -15,6 +16,7 @@ import { renderAchievements, attachAchievementsEvents } from './modules/Achievem
 import { renderSettings, attachSettingsEvents } from './modules/Settings.js';
 
 // --- App State ---
+const ACTIVE_TAB_STORAGE_KEY = 'levelzero_active_tab';
 let activeTab = 'activities';
 
 const TABS = [
@@ -25,11 +27,50 @@ const TABS = [
     { id: 'settings', icon: Icons.settings, label: 'Config' },
 ];
 
+function isValidTab(tabId) {
+    return TABS.some(tab => tab.id === tabId);
+}
+
+function restoreActiveTab() {
+    try {
+        const storedTab = localStorage.getItem(ACTIVE_TAB_STORAGE_KEY);
+        if (storedTab && isValidTab(storedTab)) {
+            activeTab = storedTab;
+        }
+    } catch (err) {
+        console.warn('[App] Failed to restore active tab:', err);
+    }
+}
+
+
+async function registerServiceWorker() {
+    if (!('serviceWorker' in navigator) || location.protocol === 'file:') {
+        return;
+    }
+
+    try {
+        await navigator.serviceWorker.register('./sw.js', { scope: './' });
+    } catch (err) {
+        console.warn('[App] Service worker registration failed:', err);
+    }
+}
+
+function persistActiveTab() {
+    try {
+        localStorage.setItem(ACTIVE_TAB_STORAGE_KEY, activeTab);
+    } catch (err) {
+        console.warn('[App] Failed to persist active tab:', err);
+    }
+}
+
 // --- Initialize ---
-function init() {
+async function init() {
+    await registerServiceWorker();
+    restoreActiveTab();
     gameEngine.init();
     setupEventListeners();
     render();
+    maybeShowProfilePicker();
 }
 
 // --- Event Listeners (Global) ---
@@ -219,6 +260,7 @@ function attachTabNavEvents() {
             const newTab = btn.dataset.tab;
             if (newTab !== activeTab) {
                 activeTab = newTab;
+                persistActiveTab();
                 render();
             }
         });
@@ -247,5 +289,57 @@ function attachTabEvents() {
     }
 }
 
+function maybeShowProfilePicker() {
+    const profiles = gameEngine.getProfiles();
+    if (profiles.length < 2) return;
+
+    const activeProfile = gameEngine.getActiveProfile();
+    const body = `
+      <div style="display: flex; flex-direction: column; gap: var(--space-3);">
+        <p style="margin: 0; color: var(--color-text-muted);">
+          This browser has multiple LevelZero profiles. Pick the correct one before continuing so progress does not mix.
+        </p>
+        <div style="display: flex; flex-direction: column; gap: var(--space-2); margin-top: var(--space-2);">
+          ${profiles.map(profile => `
+            <button
+              class="btn ${profile.id === activeProfile?.id ? 'btn-primary' : 'btn-ghost'} profile-picker-option"
+              data-profile-id="${profile.id}"
+              style="justify-content: space-between; width: 100%;"
+            >
+              <span>${profile.name}</span>
+              <span style="font-size: var(--text-xs); opacity: 0.75;">${profile.id === activeProfile?.id ? 'Current' : 'Switch'}</span>
+            </button>
+          `).join('')}
+        </div>
+      </div>
+    `;
+
+    const modal = showModal({
+        title: 'Choose Browser Profile',
+        body,
+        confirmText: 'Keep Current',
+        cancelText: 'Later',
+    });
+
+    modal.querySelectorAll('.profile-picker-option').forEach((button) => {
+        button.addEventListener('click', () => {
+            const profile = gameEngine.switchProfile(button.dataset.profileId);
+            if (profile) {
+                showToast({
+                    title: 'Profile ready',
+                    message: `Loaded ${profile.name}.`,
+                    type: 'success',
+                });
+                render();
+            }
+            modal.remove();
+        });
+    });
+}
+
 // --- Start ---
-document.addEventListener('DOMContentLoaded', init);
+document.addEventListener('DOMContentLoaded', () => {
+    init().catch(err => {
+        console.error('[App] Failed to initialize:', err);
+    });
+});

@@ -659,6 +659,61 @@ export class GameEngine {
         return this.state.habits.reduce((sum, h) => sum + (h.streak || 0), 0);
     }
 
+    getProfiles() {
+        return saveManager.getProfiles();
+    }
+
+    getActiveProfile() {
+        return saveManager.getActiveProfile();
+    }
+
+    createProfile(name) {
+        const profile = saveManager.createProfile(name);
+        this.state = getDefaultState();
+        this._save();
+        eventBus.emit('profile:change', { profile, created: true });
+        return profile;
+    }
+
+    switchProfile(profileId) {
+        const profile = saveManager.switchProfile(profileId);
+        if (!profile) return null;
+
+        const saved = saveManager.load(profileId);
+        this.state = saved
+            ? this._mergeWithDefaults(saved, getDefaultState())
+            : getDefaultState();
+
+        if (!saved) {
+            this._save();
+        }
+
+        eventBus.emit('profile:change', { profile, created: false });
+        eventBus.emit('state:change', this.state);
+        return profile;
+    }
+
+    renameActiveProfile(name) {
+        const activeProfile = saveManager.getActiveProfile();
+        if (!activeProfile) return null;
+        return saveManager.renameProfile(activeProfile.id, name);
+    }
+
+    deleteProfile(profileId) {
+        const result = saveManager.deleteProfile(profileId);
+        if (!result.success) return result;
+
+        const activeProfile = saveManager.getActiveProfile();
+        const saved = activeProfile ? saveManager.load(activeProfile.id) : null;
+        this.state = saved
+            ? this._mergeWithDefaults(saved, getDefaultState())
+            : getDefaultState();
+        this._save();
+        eventBus.emit('profile:change', { profile: activeProfile, deletedProfileId: profileId });
+        eventBus.emit('state:change', this.state);
+        return result;
+    }
+
     // --- Reset ---
 
     factoryReset() {
