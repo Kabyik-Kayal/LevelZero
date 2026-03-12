@@ -69,34 +69,38 @@ export function renderShop(state, engine) {
           <div class="shop-item-icon">
             <span style="font-size: 1.5rem;">${Icons[item.icon] || Icons.gift}</span>
           </div>
-          <div>
-            <p class="shop-item-name">${esc(item.name)}</p>
-            <div class="shop-item-price">
-              ${Icons.coins} ${item.price} Gold
+          <div class="shop-item-main">
+            <div class="shop-item-header">
+              <p class="shop-item-name">${esc(item.name)}</p>
+              <div class="shop-item-actions">
+                <button 
+                  class="btn btn-sm ${btnClass}"
+                  data-action="buy-item"
+                  data-id="${item.id}"
+                  data-custom="${item.isCustom}"
+                  ${disabled ? 'disabled' : ''}
+                >
+                  ${btnLabel}
+                </button>
+                ${item.isCustom ? `
+                  <button class="delete-btn" data-action="delete-reward" data-id="${item.id}" title="Remove reward" style="opacity: 1;">
+                    ${Icons.trash}
+                  </button>
+                ` : ''}
+              </div>
             </div>
             ${locked ? `
               <div class="shop-item-level-lock">
                 ${Icons.lock} Unlocks at Level ${item.levelRequired}
               </div>
             ` : ''}
-            ${limitBadges ? `<div class="quest-tags" style="margin-top: 4px;">${limitBadges}</div>` : ''}
+            <div class="shop-item-footer">
+              ${limitBadges ? `<div class="shop-item-badges">${limitBadges}</div>` : '<div class="shop-item-badges"></div>'}
+              <div class="shop-item-price">
+                ${Icons.coins} ${item.price} Gold
+              </div>
+            </div>
           </div>
-        </div>
-        <div style="display: flex; align-items: center; gap: var(--space-2);">
-          <button 
-            class="btn btn-sm ${btnClass}"
-            data-action="buy-item"
-            data-id="${item.id}"
-            data-custom="${item.isCustom}"
-            ${disabled ? 'disabled' : ''}
-          >
-            ${btnLabel}
-          </button>
-          ${item.isCustom ? `
-            <button class="delete-btn" data-action="delete-reward" data-id="${item.id}" title="Remove reward" style="opacity: 1;">
-              ${Icons.trash}
-            </button>
-          ` : ''}
         </div>
       </div>
     `;
