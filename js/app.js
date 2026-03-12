@@ -8,6 +8,7 @@ import { renderHeader } from './components/Header.js';
 import { showToast } from './components/Toast.js';
 import { Icons } from './components/Icons.js';
 import { showModal } from './components/Modal.js';
+import { showIntroGuide } from './components/IntroGuide.js';
 
 import { renderActivities, attachActivitiesEvents } from './modules/Activities.js';
 import { renderCharacter, attachCharacterEvents } from './modules/Character.js';
@@ -18,6 +19,8 @@ import { renderSettings, attachSettingsEvents } from './modules/Settings.js';
 // --- App State ---
 const ACTIVE_TAB_STORAGE_KEY = 'levelzero_active_tab';
 let activeTab = 'activities';
+let introGuideVisible = false;
+let introGuideTimer = null;
 
 const TABS = [
     { id: 'activities', icon: Icons.sword, label: 'Activities' },
@@ -61,6 +64,40 @@ function persistActiveTab() {
     } catch (err) {
         console.warn('[App] Failed to persist active tab:', err);
     }
+}
+
+function maybeShowIntroGuide() {
+    if (introGuideVisible) return;
+    if (gameEngine.hasSeenIntroGuide()) return;
+    if (document.getElementById('modal-overlay')) return;
+
+    introGuideVisible = true;
+    showIntroGuide({
+        onStepChange: (step) => {
+            if (step.tab && step.tab !== activeTab) {
+                activeTab = step.tab;
+                persistActiveTab();
+                render();
+            }
+        },
+        onComplete: () => {
+            introGuideVisible = false;
+            gameEngine.markIntroGuideSeen();
+            showToast({
+                title: 'Guide complete',
+                message: 'Your journey is ready. Start with a quest or habit.',
+                type: 'success',
+                icon: Icons.sparkles,
+            });
+        },
+    });
+}
+
+function scheduleIntroGuideCheck() {
+    clearTimeout(introGuideTimer);
+    introGuideTimer = setTimeout(() => {
+        maybeShowIntroGuide();
+    }, 80);
 }
 
 // --- Initialize ---
@@ -249,6 +286,7 @@ function render() {
     // Attach events
     attachTabNavEvents();
     attachTabEvents();
+    scheduleIntroGuideCheck();
 }
 
 function attachTabNavEvents() {
@@ -291,7 +329,7 @@ function attachTabEvents() {
 
 function maybeShowProfilePicker() {
     const profiles = gameEngine.getProfiles();
-    if (profiles.length < 2) return;
+    if (profiles.length < 2) return false;
 
     const activeProfile = gameEngine.getActiveProfile();
     const body = `
@@ -319,6 +357,8 @@ function maybeShowProfilePicker() {
         body,
         confirmText: 'Keep Current',
         cancelText: 'Later',
+        onConfirm: () => scheduleIntroGuideCheck(),
+        onCancel: () => scheduleIntroGuideCheck(),
     });
 
     modal.querySelectorAll('.profile-picker-option').forEach((button) => {
@@ -331,10 +371,13 @@ function maybeShowProfilePicker() {
                     type: 'success',
                 });
                 render();
+                scheduleIntroGuideCheck();
             }
             modal.remove();
         });
     });
+
+    return true;
 }
 
 // --- Start ---

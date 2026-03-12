@@ -179,6 +179,62 @@
     }
 }
 
+@keyframes introGuideFloat {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-5px);
+    }
+}
+
+@keyframes introGuideShadow {
+
+    0%,
+    100% {
+        transform: translateX(-50%) scaleX(1);
+        opacity: 0.9;
+    }
+
+    50% {
+        transform: translateX(-50%) scaleX(0.92);
+        opacity: 0.72;
+    }
+}
+
+@keyframes introGuideBlink {
+
+    0%,
+    44%,
+    48%,
+    100% {
+        transform: scaleY(1);
+        opacity: 1;
+    }
+
+    46% {
+        transform: scaleY(0.18);
+        opacity: 0.9;
+    }
+}
+
+@keyframes introGuideTwinkle {
+
+    0%,
+    100% {
+        transform: scale(0.92) rotate(0deg);
+        opacity: 0.55;
+    }
+
+    50% {
+        transform: scale(1.14) rotate(8deg);
+        opacity: 1;
+    }
+}
+
 @keyframes borderGlow {
 
     0%,

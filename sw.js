@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'levelzero-cache-v1';
+const CACHE_VERSION = 'levelzero-cache-v2';
 const APP_SHELL = [
     './',
     './index.html',
@@ -24,6 +24,7 @@ const APP_SHELL = [
     './js/modules/Activities.js',
     './js/components/Toast.js',
     './js/components/Modal.js',
+    './js/components/IntroGuide.js',
     './js/components/Header.js',
     './js/components/Icons.js',
     './js/utils/escapeHTML.js',

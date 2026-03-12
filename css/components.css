@@ -2294,6 +2294,396 @@
     font-family: var(--font-display);
 }
 
+/* --- Intro Guide --- */
+.intro-guide-shell {
+    position: fixed;
+    left: 24px;
+    right: 24px;
+    bottom: 24px;
+    z-index: 45;
+    pointer-events: none;
+}
+
+.intro-guide-shell.is-closing {
+    opacity: 0;
+    transform: translateY(12px);
+    transition: opacity 180ms ease, transform 180ms ease;
+}
+
+.intro-guide-panel {
+    max-width: 720px;
+    margin: 0 auto 0 0;
+    display: flex;
+    align-items: flex-end;
+    gap: 1rem;
+    pointer-events: auto;
+}
+
+.intro-guide-mascot {
+    position: relative;
+    width: 130px;
+    height: 146px;
+    flex-shrink: 0;
+    animation: introGuideFloat 3.8s ease-in-out infinite;
+}
+
+.intro-guide-mascot-glow {
+    position: absolute;
+    inset: 20px 8px 8px;
+    border-radius: 999px;
+    background: radial-gradient(circle, rgba(183, 140, 73, 0.24), transparent 68%);
+    filter: blur(10px);
+}
+
+.intro-guide-mascot-shadow {
+    position: absolute;
+    left: 50%;
+    bottom: 4px;
+    width: 88px;
+    height: 16px;
+    transform: translateX(-50%);
+    border-radius: 999px;
+    background: radial-gradient(circle, rgba(93, 70, 49, 0.28), rgba(93, 70, 49, 0) 72%);
+    animation: introGuideShadow 3.8s ease-in-out infinite;
+}
+
+.intro-guide-mascot-head {
+    position: absolute;
+    top: 14px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 66px;
+    height: 64px;
+    border-radius: 999px;
+    background: linear-gradient(180deg, #fbf4e7, #e5d4b8);
+    border: 1px solid rgba(121, 101, 77, 0.16);
+    box-shadow: 0 12px 22px rgba(101, 82, 60, 0.16), 0 1px 0 rgba(255, 251, 244, 0.92) inset;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 11px;
+    z-index: 3;
+}
+
+.intro-guide-mascot-hood {
+    position: absolute;
+    top: 2px;
+    left: 50%;
+    width: 88px;
+    height: 86px;
+    transform: translateX(-50%);
+    border-radius: 42px 42px 32px 32px;
+    background: linear-gradient(180deg, #8f6d4e, #6f5139);
+    border: 1px solid rgba(101, 78, 57, 0.28);
+    box-shadow: 0 12px 24px rgba(86, 63, 42, 0.18), inset 0 1px 0 rgba(255, 245, 230, 0.14);
+}
+
+.intro-guide-mascot-hood::before {
+    content: '';
+    position: absolute;
+    inset: 10px 12px 16px;
+    border-radius: 34px 34px 24px 24px;
+    background: linear-gradient(180deg, rgba(255, 245, 230, 0.12), rgba(255, 245, 230, 0));
+}
+
+.intro-guide-mascot-blush {
+    position: absolute;
+    top: 33px;
+    width: 10px;
+    height: 6px;
+    border-radius: 999px;
+    background: rgba(206, 150, 126, 0.38);
+    filter: blur(1px);
+}
+
+.intro-guide-mascot-blush-left {
+    left: 12px;
+}
+
+.intro-guide-mascot-blush-right {
+    right: 12px;
+}
+
+.intro-guide-mascot-eye {
+    width: 7px;
+    height: 12px;
+    border-radius: 999px;
+    background: var(--color-text-on-warm);
+    box-shadow: 0 0 0 4px rgba(255, 249, 239, 0.24);
+    animation: introGuideBlink 4.6s ease-in-out infinite;
+}
+
+.intro-guide-mascot-mouth {
+    position: absolute;
+    bottom: 13px;
+    left: 50%;
+    width: 17px;
+    height: 8px;
+    transform: translateX(-50%);
+    border-bottom: 2px solid rgba(92, 71, 48, 0.78);
+    border-radius: 0 0 999px 999px;
+}
+
+.intro-guide-mascot-cape {
+    position: absolute;
+    left: 50%;
+    bottom: 22px;
+    width: 98px;
+    height: 82px;
+    transform: translateX(-50%);
+    border-radius: 34px 34px 26px 26px;
+    background: linear-gradient(180deg, #7c5b42, #59402d);
+    border: 1px solid rgba(101, 78, 57, 0.26);
+    box-shadow: 0 16px 24px rgba(86, 63, 42, 0.14);
+}
+
+.intro-guide-mascot-cape::before {
+    content: '';
+    position: absolute;
+    inset: 14px 18px 12px;
+    border-radius: 18px;
+    background: linear-gradient(180deg, rgba(255, 248, 238, 0.08), rgba(255, 248, 238, 0));
+}
+
+.intro-guide-mascot-body {
+    position: absolute;
+    bottom: 16px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 86px;
+    height: 84px;
+    border-radius: 28px 28px 24px 24px;
+    background: linear-gradient(180deg, #b08b62, #7e5d42);
+    border: 1px solid rgba(110, 84, 58, 0.28);
+    box-shadow: 0 18px 30px rgba(96, 73, 48, 0.22), inset 0 1px 0 rgba(255, 247, 237, 0.24);
+    z-index: 2;
+    overflow: hidden;
+}
+
+.intro-guide-mascot-body::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+        radial-gradient(circle at top, rgba(255, 247, 234, 0.22), transparent 46%),
+        linear-gradient(180deg, rgba(255, 249, 239, 0.14), rgba(255, 249, 239, 0));
+}
+
+.intro-guide-mascot-body::after {
+    content: '';
+    position: absolute;
+    top: 16px;
+    bottom: 8px;
+    left: 50%;
+    width: 2px;
+    transform: translateX(-50%);
+    background: rgba(255, 238, 214, 0.22);
+    border-radius: 999px;
+}
+
+.intro-guide-mascot-emblem {
+    position: absolute;
+    top: 22px;
+    left: 50%;
+    width: 24px;
+    height: 24px;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #f1ddb4;
+    background: radial-gradient(circle, rgba(255, 243, 219, 0.18), rgba(255, 243, 219, 0) 70%);
+    z-index: 1;
+}
+
+.intro-guide-mascot-emblem svg {
+    width: 16px;
+    height: 16px;
+}
+
+.intro-guide-mascot-arm {
+    position: absolute;
+    top: 78px;
+    width: 18px;
+    height: 42px;
+    border-radius: 999px;
+    background: linear-gradient(180deg, #9b7553, #78573c);
+    border: 1px solid rgba(110, 84, 58, 0.24);
+    z-index: 1;
+}
+
+.intro-guide-mascot-arm::after {
+    content: '';
+    position: absolute;
+    bottom: -3px;
+    left: 50%;
+    width: 14px;
+    height: 14px;
+    transform: translateX(-50%);
+    border-radius: 999px;
+    background: linear-gradient(180deg, #ecd9bb, #dcc6a5);
+    border: 1px solid rgba(121, 101, 77, 0.14);
+}
+
+.intro-guide-mascot-arm-left {
+    left: 16px;
+    transform: rotate(14deg);
+}
+
+.intro-guide-mascot-arm-right {
+    right: 16px;
+    transform: rotate(-18deg);
+}
+
+.intro-guide-mascot-feet {
+    position: absolute;
+    left: 50%;
+    bottom: 8px;
+    width: 52px;
+    display: flex;
+    justify-content: space-between;
+    transform: translateX(-50%);
+    z-index: 1;
+}
+
+.intro-guide-mascot-feet span {
+    width: 18px;
+    height: 10px;
+    border-radius: 999px;
+    background: linear-gradient(180deg, #6f5138, #513826);
+    box-shadow: inset 0 1px 0 rgba(255, 249, 239, 0.14);
+}
+
+.intro-guide-mascot-spark {
+    position: absolute;
+    color: var(--color-gold);
+    opacity: 0.9;
+    animation: introGuideTwinkle 2.4s ease-in-out infinite;
+}
+
+.intro-guide-mascot-spark svg {
+    width: 18px;
+    height: 18px;
+}
+
+.intro-guide-mascot-spark-a {
+    top: 0;
+    right: 8px;
+}
+
+.intro-guide-mascot-spark-b {
+    bottom: 40px;
+    right: -2px;
+    animation-delay: 0.8s;
+}
+
+.intro-guide-card {
+    position: relative;
+    flex: 1;
+    max-width: 540px;
+    padding: 1.2rem 1.25rem 1.1rem;
+    border-radius: 24px;
+    border: 1px solid rgba(121, 101, 77, 0.18);
+    background: linear-gradient(180deg, rgba(255, 251, 245, 0.98), rgba(232, 223, 209, 0.96));
+    box-shadow: var(--shadow-panel);
+}
+
+.intro-guide-card::before {
+    content: '';
+    position: absolute;
+    left: -10px;
+    bottom: 24px;
+    width: 20px;
+    height: 20px;
+    background: inherit;
+    border-left: 1px solid rgba(121, 101, 77, 0.18);
+    border-bottom: 1px solid rgba(121, 101, 77, 0.18);
+    transform: rotate(45deg);
+}
+
+.intro-guide-eyebrow {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 0.45rem;
+    font-size: 0.68rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--color-text-secondary);
+}
+
+.intro-guide-title {
+    margin: 0;
+    font-size: 1.2rem;
+    line-height: 1.1;
+    color: var(--color-text-primary);
+}
+
+.intro-guide-body {
+    margin-top: 0.55rem;
+    font-size: 0.82rem;
+    line-height: 1.5;
+    color: var(--color-text-secondary);
+}
+
+.intro-guide-bullets {
+    display: grid;
+    gap: 0.55rem;
+    margin-top: 0.9rem;
+}
+
+.intro-guide-bullet {
+    display: grid;
+    grid-template-columns: 18px 1fr;
+    gap: 0.65rem;
+    align-items: flex-start;
+    font-size: 0.78rem;
+    line-height: 1.42;
+    color: var(--color-text-secondary);
+}
+
+.intro-guide-bullet svg {
+    width: 16px;
+    height: 16px;
+    color: var(--color-gold);
+    margin-top: 2px;
+}
+
+.intro-guide-dots {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    margin-top: 0.95rem;
+}
+
+.intro-guide-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 999px;
+    background: rgba(121, 101, 77, 0.18);
+    transition: transform var(--transition-base), background var(--transition-base);
+}
+
+.intro-guide-dot.active {
+    background: var(--color-gold);
+    transform: scale(1.15);
+}
+
+.intro-guide-actions {
+    margin-top: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+}
+
+.intro-guide-actions-right {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+
 .modal-body .input,
 .modal-body .select {
     margin-top: var(--space-2);

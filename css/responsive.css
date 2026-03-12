@@ -137,6 +137,87 @@
         flex-direction: column;
         width: 100%;
     }
+
+    .intro-guide-shell {
+        left: 12px;
+        right: 12px;
+        bottom: 12px;
+    }
+
+    .intro-guide-panel {
+        margin: 0;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.7rem;
+    }
+
+    .intro-guide-mascot {
+        width: 88px;
+        height: 104px;
+        margin-left: 10px;
+    }
+
+    .intro-guide-mascot-head {
+        width: 52px;
+        height: 50px;
+        top: 12px;
+        gap: 9px;
+    }
+
+    .intro-guide-mascot-hood {
+        width: 70px;
+        height: 68px;
+    }
+
+    .intro-guide-mascot-cape {
+        width: 76px;
+        height: 60px;
+        bottom: 17px;
+    }
+
+    .intro-guide-mascot-body {
+        width: 66px;
+        height: 62px;
+        bottom: 12px;
+    }
+
+    .intro-guide-mascot-arm {
+        top: 60px;
+        width: 14px;
+        height: 30px;
+    }
+
+    .intro-guide-mascot-feet {
+        width: 42px;
+    }
+
+    .intro-guide-card {
+        max-width: none;
+    }
+
+    .intro-guide-card::before {
+        left: 20px;
+        top: -10px;
+        bottom: auto;
+        border-left: 1px solid rgba(121, 101, 77, 0.18);
+        border-top: 1px solid rgba(121, 101, 77, 0.18);
+        border-bottom: none;
+    }
+
+    .intro-guide-actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .intro-guide-actions-right {
+        width: 100%;
+    }
+
+    .intro-guide-actions-right .btn,
+    .intro-guide-actions .btn {
+        width: 100%;
+        justify-content: center;
+    }
 }
 
 /* --- Tablet (640px - 1023px) --- */

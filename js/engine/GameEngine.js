@@ -64,6 +64,9 @@ function getDefaultState() {
         dailyQuest: null,
         lastDailyQuestDate: null,
 
+        // Onboarding
+        introGuideSeenAt: null,
+
         // AI Agent
         aiApiKey: '',
         aiEnabled: true,
@@ -85,8 +88,7 @@ export class GameEngine {
     init() {
         const saved = saveManager.load();
         if (saved) {
-            // Deep merge saved with defaults to handle new fields
-            this.state = this._mergeWithDefaults(saved, getDefaultState());
+            this.state = this._hydrateState(saved);
         }
 
         this._checkDailyReset();
@@ -95,6 +97,18 @@ export class GameEngine {
         this._save();
 
         return this.state;
+    }
+
+    _hydrateState(saved) {
+        const merged = this._mergeWithDefaults(saved, getDefaultState());
+
+        // Existing profiles created before the guide shipped should not suddenly
+        // be forced through onboarding. New profiles keep the default null.
+        if (saved && saved.introGuideSeenAt === undefined) {
+            merged.introGuideSeenAt = Date.now();
+        }
+
+        return merged;
     }
 
     _mergeWithDefaults(saved, defaults) {
@@ -655,6 +669,17 @@ export class GameEngine {
         return this.state;
     }
 
+    hasSeenIntroGuide() {
+        return Boolean(this.state.introGuideSeenAt);
+    }
+
+    markIntroGuideSeen() {
+        if (!this.state.introGuideSeenAt) {
+            this.state.introGuideSeenAt = Date.now();
+            this._save();
+        }
+    }
+
     getTotalStreaks() {
         return this.state.habits.reduce((sum, h) => sum + (h.streak || 0), 0);
     }
@@ -681,7 +706,7 @@ export class GameEngine {
 
         const saved = saveManager.load(profileId);
         this.state = saved
-            ? this._mergeWithDefaults(saved, getDefaultState())
+            ? this._hydrateState(saved)
             : getDefaultState();
 
         if (!saved) {
@@ -706,7 +731,7 @@ export class GameEngine {
         const activeProfile = saveManager.getActiveProfile();
         const saved = activeProfile ? saveManager.load(activeProfile.id) : null;
         this.state = saved
-            ? this._mergeWithDefaults(saved, getDefaultState())
+            ? this._hydrateState(saved)
             : getDefaultState();
         this._save();
         eventBus.emit('profile:change', { profile: activeProfile, deletedProfileId: profileId });
@@ -737,7 +762,7 @@ export class GameEngine {
     async importData(file) {
         const imported = await saveManager.importData(file);
         if (imported) {
-            this.state = this._mergeWithDefaults(imported, getDefaultState());
+            this.state = this._hydrateState(imported);
             this._save();
             eventBus.emit('game:import', {});
             return true;
