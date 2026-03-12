@@ -680,6 +680,11 @@ export class GameEngine {
         }
     }
 
+    resetIntroGuide() {
+        this.state.introGuideSeenAt = null;
+        this._save();
+    }
+
     getTotalStreaks() {
         return this.state.habits.reduce((sum, h) => sum + (h.streak || 0), 0);
     }

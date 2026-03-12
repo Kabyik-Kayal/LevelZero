@@ -1651,7 +1651,7 @@
     inset: 0;
     border-radius: var(--radius-xl);
     padding: 1px;
-    background: linear-gradient(135deg, transparent, var(--color-indigo-glow), transparent);
+    background: linear-gradient(135deg, transparent, var(--color-gold-glow), transparent);
     -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
     -webkit-mask-composite: xor;
     mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
@@ -1661,9 +1661,9 @@
 }
 
 .starter-pack-card:hover {
-    border-color: rgba(99, 102, 241, 0.3);
+    border-color: rgba(183, 140, 73, 0.32);
     transform: translateY(-3px);
-    box-shadow: 0 8px 32px rgba(99, 102, 241, 0.15);
+    box-shadow: 0 8px 32px rgba(183, 140, 73, 0.16);
 }
 
 .starter-pack-card:hover::before {
@@ -1682,7 +1682,7 @@
     height: 48px;
     background: var(--color-bg-input);
     border-radius: var(--radius-xl);
-    color: var(--color-indigo-light);
+    color: var(--color-gold);
     margin-bottom: var(--space-2);
     transition: transform var(--transition-spring), color var(--transition-base), box-shadow var(--transition-base);
 }
@@ -1694,8 +1694,8 @@
 
 .starter-pack-card:hover .starter-pack-emoji {
     transform: scale(1.15) translateY(-4px);
-    color: var(--color-indigo);
-    box-shadow: 0 4px 12px var(--color-indigo-glow);
+    color: var(--color-gold);
+    box-shadow: 0 4px 12px var(--color-gold-glow);
 }
 
 .starter-pack-name {
@@ -1718,8 +1718,8 @@
     text-transform: uppercase;
     font-weight: var(--font-black);
     letter-spacing: var(--tracking-widest);
-    color: var(--color-indigo-light);
-    background: var(--color-indigo-glow);
+    color: var(--color-text-on-warm);
+    background: rgba(183, 140, 73, 0.16);
     padding: 2px 8px;
     border-radius: var(--radius-sm);
     margin-top: var(--space-1);
@@ -1746,14 +1746,14 @@
 }
 
 .starter-pack-add-btn:hover {
-    color: var(--color-indigo-light);
-    border-color: rgba(99, 102, 241, 0.3);
-    background: var(--color-indigo-glow);
+    color: var(--color-text-on-warm);
+    border-color: rgba(183, 140, 73, 0.3);
+    background: rgba(183, 140, 73, 0.14);
 }
 
 .starter-pack-add-btn.active {
-    color: var(--color-indigo-light);
-    border-color: rgba(99, 102, 241, 0.3);
+    color: var(--color-text-on-accent);
+    border-color: rgba(183, 140, 73, 0.32);
     border-style: solid;
 }
 
@@ -2055,6 +2055,11 @@
 .starter-pack-add-btn {
     background: linear-gradient(180deg, #fbf7f0, #e6dccd);
     color: var(--color-text-secondary);
+}
+
+.starter-pack-add-btn.active {
+    background: linear-gradient(180deg, #c79c60, #9e7340) !important;
+    color: var(--color-text-on-accent);
 }
 
 .input,

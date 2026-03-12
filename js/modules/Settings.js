@@ -166,6 +166,11 @@ export function renderSettings(state, engine) {
 
   const aboutRows = [
     renderSettingsRow({
+      label: 'Replay Guide',
+      desc: 'Show the first-time helper again for this browser profile',
+      right: `<button class="btn btn-ghost btn-sm" id="settings-replay-guide">${Icons.sparkles} Replay</button>`,
+    }),
+    renderSettingsRow({
       label: 'LevelZero v1.0',
       desc: 'Gamify your life. Become the hero of your own story.',
       noBorder: true,
@@ -398,6 +403,20 @@ export function attachSettingsEvents(engine, rerender) {
       const urls = input.value.split(',').map(u => u.trim()).filter(u => u);
       engine.setPortfolioUrls(urls);
       showToast({ title: 'URLs Saved', message: 'Portfolio sources updated.', type: 'success', icon: '🔗' });
+    });
+  }
+
+  const replayGuideBtn = document.getElementById('settings-replay-guide');
+  if (replayGuideBtn) {
+    replayGuideBtn.addEventListener('click', () => {
+      engine.resetIntroGuide();
+      showToast({
+        title: 'Guide reset',
+        message: 'The helper will appear again for this profile.',
+        type: 'success',
+        icon: Icons.sparkles,
+      });
+      rerender();
     });
   }
 

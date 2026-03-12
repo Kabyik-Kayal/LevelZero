@@ -69,7 +69,7 @@ function persistActiveTab() {
 function maybeShowIntroGuide() {
     if (introGuideVisible) return;
     if (gameEngine.hasSeenIntroGuide()) return;
-    if (document.getElementById('modal-overlay')) return;
+    if (document.getElementById('modal-overlay')) return false;
 
     introGuideVisible = true;
     showIntroGuide({
@@ -91,12 +91,17 @@ function maybeShowIntroGuide() {
             });
         },
     });
+
+    return true;
 }
 
 function scheduleIntroGuideCheck() {
     clearTimeout(introGuideTimer);
     introGuideTimer = setTimeout(() => {
-        maybeShowIntroGuide();
+        const shown = maybeShowIntroGuide();
+        if (shown === false && !gameEngine.hasSeenIntroGuide()) {
+            scheduleIntroGuideCheck();
+        }
     }, 80);
 }
 
