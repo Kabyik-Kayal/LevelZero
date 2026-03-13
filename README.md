@@ -10,6 +10,30 @@ If you fail to do your habits, your character takes damage—so stay consistent 
 
 ---
 
+
+## UI Screenshots
+
+Guide / Onboarding
+
+![Guide](assets/Guide.png)
+
+Main UI (Activities)
+
+![Activities screen](assets/UI_1.png)
+
+Hero / Profile screen
+
+![Hero screen](assets/UI_2.png)
+
+Bazaar / Shop
+
+![Bazaar screen](assets/UI_3.png)
+
+Achievements and Awards
+
+![Achievements screen](assets/UI_4.png)
+
+
 ## ✨ Features
 
 - **Personalized AI Dungeon Master**: Connects to an AI to generate custom, personalized daily quests tailored to your career goals and interests!
@@ -24,6 +48,7 @@ If you fail to do your habits, your character takes damage—so stay consistent 
 
 ## 🎮 How to Play (The Core Loop)
 
+0. **Our Guide Appears on first usage to explain the Game**
 1. **Add Quests & Habits**: Every day, write down the things you need to do.
 2. **Complete Them**: Click the empty circles to cross them off.
 3. **Get Rewarded**: You instantly earn **XP** and **Gold**.
@@ -78,5 +103,5 @@ LevelZero features an incredibly cool AI integration that acts like your persona
 2. Open **LevelZero**, and click on the **Config (Settings)** tab on the far right.
 3. Under the **AI Agent** section, click **Set Key** and paste that long code you just got.
 4. Click **Test** to make sure it connected successfully.
-5. *(Optional)* Scroll down to **Portfolio URLs** and put in a link to your Website, LinkedIn, or GitHub.
+5. Scroll down to **Portfolio URLs** and put in a link to your Website, LinkedIn, GitHub, etc.
 6. Click **Regenerate**. The AI will scan your links and automatically generate a custom set of daily quests and habits perfectly tailored to what you want to achieve!
